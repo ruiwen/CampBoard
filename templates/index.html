@@ -1,46 +1,29 @@
-<!DOCTYPE html>
-<html lang="">
-<head>
-  <meta charset="utf-8">
-	<title>CampBoard</title>
+{% extends "base.html" %}
 
-	<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js" type="text/javascript"></script>
-	<script src="/media/js/campboard.js" type="text/javascript"></script>
-	
-	<script type="text/javascript">
-		var ws = new WebSocket("ws://ubuntuvm:8888/echo/");
-		//ws.onopen = function() {
-			ws.onmessage = function(msg) {
-				console.log("Received");
-				console.log(msg);
-				var e = document.getElementById("echo");
-				e.innerHTML = e.innerHTML + "\r\n" + msg.data;
-			}
-		//}
-
-		window.onbeforeunload = function() {
-			ws.send("Close");
-			ws.close();
-		}
+{% block main %}
+		<div id="main-stats">
+			<h1>Statistics</h1>
+			<h2>Total tweets - <span id="total-tweets">0</span></h2>
+			<h2>Unique users - <span id="unique-tweeters">0</span></h2>			
+		</div>
 		
-	</script>
-</head>
-<body>
-	
-	<header>
-		<h1>CampBoard</h1>
-	</header>
-
-	<div id="main">
-		<textarea id="echo" rows=15 cols=50>Echo goes here</textarea>
+		<div id="main-recent"
+			<h2>Most recent tweets</h2>
+			<ul id="recent-tweets">
+				<li class="placeholder">None yet</li>
+			</ul>
+		</div>
 		
-		<form id="theform" method="post" onsubmit="var d = document.getElementById('text'); ws.send(d.value); console.log('Sent: ' + d.value); d.value=''; return false;">
+		<div id="session-stats">
+			<h2>Sessions</h2>
+			<ul id="session-stats-list">
+				<li class="placeholder">None yet</li>
+			</ul>
+		</div>		
+		
+		
+		<form id="theform" method="post" onsubmit="var d = document.getElementById('text'); CampBoard.ws.send(d.value); console.log('Sent: ' + d.value); d.value=''; return false;">
 			<input id="text"type="text">
 		</form>	
 
-	</div>
-
-	<footer></footer>
-
-</body>
-</html>
+{% end %}
