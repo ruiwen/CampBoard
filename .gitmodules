@@ -1,4 +1,7 @@
 [submodule "tornado"]
 	path = tornado
 	url = git@github.com:ruiwen/tornado.git
+[submodule "tweepy"]
+        path = tweepy
+        url = git@github.com:ruiwen/tweepy.git
 
