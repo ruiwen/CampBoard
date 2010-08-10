@@ -74,8 +74,8 @@ class SessionHandler(BaseHandler):
 		
 		# Get latest stats from Updater
 		session = session.strip()
-		stats = Updater.session_update(session)
-		self.render('session.html', stats=stats)
+		stats = Updater.session_stats(session)
+		self.render('session.html', session=session, stats=stats)
 
 
 
@@ -94,12 +94,15 @@ class UpdateHandler(BaseHandler):
 			i.write_message("Have a good day ahead!")
 		self.write("OK")
 
+
+
 class EchoWebSocket(tornado.websocket.WebSocketHandler):
 	def open(self):
 		if self not in campboard['ws_clients']:
 			campboard['ws_clients'].append(self)
 
-		Updater.ws_broadcast(Updater.general_update())
+		self.write_message(Updater.general_update())
+		self.write_message(Updater.recent_tweets())
 		self.receive_message(self.on_message)
 
 	def on_message(self, message):
@@ -191,13 +194,9 @@ class Updater(object):
 		except IndexError:
 			pass
 		
-		# Stuff the tweets into the database
-		db_entry = [
-			"(%s,%s,'%s','%s','%s','%s')" % (s.id, s.user.id, s.user.screen_name, s.user.profile_image_url, s.created_at, s.text) 
-			for s in statuses
-		]
-		
-		self.db.execute("INSERT INTO tweets (id, user_id, screen_name, profile_image_url, created_at, text) VALUES %s" % (",".join(db_entry)))		
+
+		db_entry = [ (s.id, s.user.id, s.user.screen_name, s.user.profile_image_url, s.created_at, s.text) for s in statuses ]
+		self.db.executemany("INSERT INTO tweets (id, user_id, screen_name, profile_image_url, created_at, text) VALUES (%s,%s,%s,%s,%s,%s)", db_entry)
 		
 		broadcast = {}
 		broadcast['recent_tweets'] = [
@@ -251,12 +250,12 @@ class Updater(object):
 		
 		rt = []
 		if channel is None:
-			rt = self.db.query("SELECT * FROM tweets LIMIT 10 ORDER BY created_at DESC")
+			rt = self.db.query("SELECT * FROM tweets ORDER BY created_at DESC LIMIT 10")
 		else:
 			rt = self.db.query('''SELECT * FROM tweets WHERE id IN (
-					SELECT tweet_id FROM hashes_tweets WHERE hash_id IN 
-						(SELECT hash_id FROM hashtags WHERE tag=%s)
-					) LIMIT 10 ORDER BY created_at DESC''', channel)
+					SELECT tweet_id FROM hashtags_tweets WHERE hash_id IN 
+						(SELECT id FROM hashtags WHERE tag=%s)
+					) ORDER BY created_at DESC LIMIT 10 ''', channel)
 	
 		recent_tweets = [
 			{
@@ -270,7 +269,7 @@ class Updater(object):
 			for t in rt
 		]
 		
-		return recent_tweets
+		return {"recent_tweets": recent_tweets}
 		
 	
 	@classmethod
@@ -291,6 +290,13 @@ class Updater(object):
 		if selector in ['tweets', 'all']:					
 			broadcast['recent_tweets'] = self.recent_tweets(session)
 		
+
+		if selector in ['tweetcount', 'stats', 'all']:
+			tweet_count = self.db.query('''SELECT COUNT(*) AS tweet_count FROM tweets WHERE id IN (
+					SELECT tweet_id FROM hashtags_tweets WHERE hash_id IN 
+						(SELECT id FROM hashtags WHERE tag=%s)
+					) ORDER BY created_at DESC''', session)[0].tweet_count
+			broadcast['tweet_count'] = tweet_count
 
 		return broadcast
 
