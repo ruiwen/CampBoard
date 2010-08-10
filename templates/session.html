@@ -1,0 +1,39 @@
+{% extends 'base.html' %}
+
+{% block main %}
+
+	{% block pageheading %} - #{{ session }}{% end %}
+
+	<div id="session-votes">
+		<h2>Votes</h2>
+		<li>
+			<li><span class="session-vote">Positive</span> - <span class="session-vote-count">{{ stats.positive }} / {{ stats.positive + stats.negative }}</span></li>
+			<li><span class="session-vote">Negative</span> - <span class="session-vote-count">{{ stats.negative }} / {{ stats.positive + stats.negative }}</span></li>
+		</li>
+		<h2><span class="session-tweets">Total mentions</span> - <span class="session-tweet-count">{{ stats.tweet_count }}</span></h2>
+
+		<div id="session-graph">
+			<!-- Implement graph here -->
+			
+			{{ stats.positive }} / {{ stats.negative }}
+		</div>
+	</div>
+
+	<div id="session-recent">
+		<h2>Recent comments on #{{ session }}</h2>
+		<ul>
+			{% if stats.recent_tweets %}
+				{% for tweet in stats.recent_tweets %}
+					<li class="tweet">
+						<a class="tweet-image" href="http://twitter.com/{{ tweet.username }}/"><img src="{{ tweet.profile_image_url }}" alt="@{{ tweet.screename }}"></a>
+						<p class="tweet-text">{{ tweet.text }}</p>
+						<small class='tweet-permalink' target='_blank'><a href='http://twitter.com/{{ tweet.screen_name }}/status/{{ tweet.id }}/'>permalink</a>";  
+					</li>
+				{% end %}
+			{% else %}
+				<li class="placeholder">No comments yet.</li>
+			{% end %}
+		</ul>
+	</div>
+
+{% end %}
