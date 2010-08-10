@@ -14,11 +14,13 @@ from tweepy.models import Status
 
 
 campboard = {
+	'db': None,
 	'event_tag': '#bcampsg6',
-	'additional_tags': [],
 	'ws_clients': [],
-	'incoming': [],
-	'incoming_ws_clients': Queue.Queue()
+	'ws_channels': {},
+	#'incoming': [],
+	#'incoming_ws_clients': Queue.Queue(),
+	'sessions': ['nodejs', 'distdb', 'hadoop', 'websockets']
 }
 
 from tornado.options import define, options
@@ -29,27 +31,32 @@ define("mysql_database", default="campboard", help="blog database name")
 define("mysql_user", default="campboard", help="blog database user")
 define("mysql_password", default="campycamp", help="blog database password")
 
-class Application(tornado.web.Application):
-    def __init__(self):
-        handlers = [
-			(r"/", MainHandler),
-			(r"/echo/", EchoWebSocket),
-			(r"/update/", UpdateHandler)
-        ]
-        settings =  {
-        	'debug': True,
-            'template_path': os.path.join(os.path.dirname(__file__), "templates"),
-            'static_path': os.path.join(os.path.dirname(__file__), "static"),
- 			#'xsrf_cookies': True,
- 			#'cookie_secret': "12!@#as.dq23/adskjlA1@d33c2t2#25tcf??.43%?1",
-        }
-        tornado.web.Application.__init__(self, handlers, **settings)
 
-        # Have one global connection to the blog DB across all handlers
-        self.db = tornado.database.Connection(
+# Initialise the database connection
+campboard['db'] = tornado.database.Connection(
             host=options.mysql_host, database=options.mysql_database,
             user=options.mysql_user, password=options.mysql_password)
 
+
+class Application(tornado.web.Application):
+	def __init__(self):
+		handlers = [
+			(r"/", MainHandler),
+			(r"/echo/", EchoWebSocket),
+			(r"/update/", UpdateHandler),
+			(r"/session/(\w+)/?", SessionHandler)
+		]
+		settings =  {
+			'debug': True,
+			'template_path': os.path.join(os.path.dirname(__file__), "templates"),
+			'static_path': os.path.join(os.path.dirname(__file__), "static"),
+				#'xsrf_cookies': True,
+				#'cookie_secret': "12!@#as.dq23/adskjlA1@d33c2t2#25tcf??.43%?1",
+		}
+		tornado.web.Application.__init__(self, handlers, **settings)
+	
+	    # Have one global connection to the blog DB across all handlers
+		self.db = campboard['db']
 
 class BaseHandler(tornado.web.RequestHandler):
     @property
@@ -58,7 +65,21 @@ class BaseHandler(tornado.web.RequestHandler):
 
 class MainHandler(BaseHandler):
 	def get(self):
+		# Craft a broadcast object on first load to seed the page with relevant data
 		self.render("index.html")
+
+
+class SessionHandler(BaseHandler):
+	def get(self, session):
+		
+		# Get latest stats from Updater
+		session = session.strip()
+		stats = Updater.session_update(session)
+		self.render('session.html', stats=stats)
+
+
+
+
 
 class UpdateHandler(BaseHandler):
 	@classmethod
@@ -76,15 +97,29 @@ class UpdateHandler(BaseHandler):
 class EchoWebSocket(tornado.websocket.WebSocketHandler):
 	def open(self):
 		if self not in campboard['ws_clients']:
-			#campboard['incoming_ws_clients'].put_nowait(self)
 			campboard['ws_clients'].append(self)
 
+		Updater.ws_broadcast(Updater.general_update())
 		self.receive_message(self.on_message)
 
 	def on_message(self, message):
 		print "Message: " + message
 		#self.write_message(unicode(dir(self)))
-				
+		
+		try:
+			msg = json.loads(message)
+			
+			# We should have a dict now
+			if msg['method'] == 'session_stats':
+				if msg['session'] != "":
+					stats = Updater.session_stats(msg['session'])
+					Updater.ws_broadcast_channel(msg['session'], stats)
+			
+		except:
+			pass
+
+			
+		# Legacy
 		if "Add Session #bcampsg6" in message:
 			for i in campboard['ws_clients']:
 				i.write_message(message)
@@ -119,6 +154,8 @@ class Updater(object):
 	
 	incoming = [] # Buffer to hold incoming data bits
 	stream = None # To hold the Tweepy Stream
+	db = campboard['db']
+	
 	
 	@classmethod
 	def start_updating(self, username, password, follow=None, track=None, timeout=None):
@@ -133,13 +170,15 @@ class Updater(object):
 		print "Appending"
 		# Stuff data into database
 		self.incoming.append(data)
-		self._process_data()
-		
+		#self._process_data()
+		self.ws_broadcast(self.update_tweets())
+		#self.ws_broadcast(self.general_update())
+	
+	
 	@classmethod
-	def _process_data(self):
-		print "Processing"
-		#statuses = [Status.parse(self.stream.api, json.loads(item)) for item in self.incoming if 'in_reply_to_status_id' in item]
-		#s = statuses[0]
+	def update_tweets(self):
+		print "Updating tweets"
+
 		statuses = []
 		try:
 			while True:
@@ -152,17 +191,15 @@ class Updater(object):
 		except IndexError:
 			pass
 		
-		broadcast = {} # Prepare our broadcast object
-		broadcast['total_tweets'] = random.randint(0,1000) # FAKE
-		broadcast['unique_tweeters'] = random.randint(0,1000) # FAKE
+		# Stuff the tweets into the database
+		db_entry = [
+			"(%s,%s,'%s','%s','%s','%s')" % (s.id, s.user.id, s.user.screen_name, s.user.profile_image_url, s.created_at, s.text) 
+			for s in statuses
+		]
 		
-		# Session faking
-		broadcast['sessions'] = {}
-		broadcast['sessions']['nodejs'] = random.randint(30, 99)
-		broadcast['sessions']['distdb'] = random.randint(15, 76)
-		broadcast['sessions']['websockets'] = random.randint(24, 83)
-		broadcast['sessions']['touchtable'] = random.randint(14, 55)
+		self.db.execute("INSERT INTO tweets (id, user_id, screen_name, profile_image_url, created_at, text) VALUES %s" % (",".join(db_entry)))		
 		
+		broadcast = {}
 		broadcast['recent_tweets'] = [
 			{
 				'text': s.text, 'created_at': unicode(s.created_at), 'id': s.id,
@@ -173,16 +210,96 @@ class Updater(object):
 				}
 			}
 			for s in statuses
+		]
+	
+		return broadcast
+	
+	
+	
+	@classmethod
+	def general_update(self):
+		print "Stats update	"
+		#statuses = [Status.parse(self.stream.api, json.loads(item)) for item in self.incoming if 'in_reply_to_status_id' in item]
+		#s = statuses[0]
+
+		broadcast = {} # Prepare our broadcast object		
 		
+		# Query our db for the relevant info
+		res = self.db.query("SELECT COUNT(user_id) as total_tweets, COUNT(DISTINCT user_id) AS unique_tweeters FROM tweets")[0]
+		
+		broadcast['total_tweets'] = res.total_tweets #random.randint(0,1000) # FAKE
+		broadcast['unique_tweeters'] = res.unique_tweeters #random.randint(0,1000) # FAKE
+		
+		# Session faking
+		broadcast['sessions'] = {}
+		
+		for session in campboard['sessions']:
+			#broadcast['sessions'][session] = Updater.sessions_stats(session, 'positive').get('session_positive', 0)
+			broadcast['sessions'][session] = self.session_stats(session, 'positive').get('session_positive', random.randint(0,99)) # For FAKE's SAKE!
+			
+			
+		#broadcast['sessions']['nodejs'] = random.randint(30, 99)
+		#broadcast['sessions']['distdb'] = random.randint(15, 76)
+		#broadcast['sessions']['websockets'] = random.randint(24, 83)
+		#broadcast['sessions']['touchtable'] = random.randint(14, 55)
+		
+		return broadcast
+
+
+	@classmethod
+	def recent_tweets(self, channel=None):
+		
+		rt = []
+		if channel is None:
+			rt = self.db.query("SELECT * FROM tweets LIMIT 10 ORDER BY created_at DESC")
+		else:
+			rt = self.db.query('''SELECT * FROM tweets WHERE id IN (
+					SELECT tweet_id FROM hashes_tweets WHERE hash_id IN 
+						(SELECT hash_id FROM hashtags WHERE tag=%s)
+					) LIMIT 10 ORDER BY created_at DESC''', channel)
+	
+		recent_tweets = [
+			{
+				'text': t.text, 'created_at': unicode(t.created_at), 'id': t.id,
+				'user': {
+					'id': t.user_id,
+					'screen_name': t.screen_name,
+					'profile_image_url': t.profile_image_url
+				}
+			}
+			for t in rt
 		]
 		
-		self.ws_broadcast(broadcast)
+		return recent_tweets
 		
-# 		for s in statuses:
-# 			if s.text:
-# 				self.ws_broadcast("%s tweeted: %s" % (s.author.screen_name, s.text))
-# 			else:
-# 				self.ws_broadcast(s)
+	
+	@classmethod
+	def session_stats(self, session, selector='all'):
+	
+		session = session.strip()
+		broadcast = {}
+
+		if selector in ['positive', 'stats', 'all']:
+			session_positive = self.db.query("SELECT COUNT(*) as positive FROM tweets WHERE text LIKE %s", "+1")[0].positive
+			broadcast['session_positive'] = session_positive
+
+		if selector in ['negative', 'stats', 'all']:
+			session_negative = self.db.query("SELECT COUNT(*) as negative FROM tweets WHERE text LIKE %s", "-1")[0].negative
+			broadcast['session_negative'] = session_negative
+		
+
+		if selector in ['tweets', 'all']:					
+			broadcast['recent_tweets'] = self.recent_tweets(session)
+		
+
+		return broadcast
+
+	
+	@classmethod
+	def ws_broadcast_channel(self, channel, data):
+		for i in campboard['ws_channels'][channel]:
+			i.write_message(data)
+			
 	
 	@classmethod
 	def ws_broadcast(self, data):
@@ -196,15 +313,16 @@ class Updater(object):
 			
 		except:
 			pass # Fail silently
-		
 
 
+# Global application
+campboard['application'] = Application()
 
 if __name__ == "__main__":
 	
 	threading.Thread(target=Updater.start_updating, name="update_thread", args=('partyblankone', 'partyon', ['108958644'], ['barcamp'])).start()
 	print "Starting server"
-	http_server = tornado.httpserver.HTTPServer(Application())
+	http_server = tornado.httpserver.HTTPServer(campboard['application'])
 	http_server.listen(options.port)
 	tornado.ioloop.IOLoop.instance().start()
 	
