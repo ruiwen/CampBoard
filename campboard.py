@@ -24,7 +24,7 @@ campboard = {
 	'ws_channels': {},
 	#'incoming': [],
 	#'incoming_ws_clients': Queue.Queue(),
-	'sessions': ['nodejs', 'distdb', 'hadoop', 'websockets']
+	'sessions': ['nodejs', 'distdb']
 }
 
 from tornado.options import define, options
@@ -75,7 +75,7 @@ class MainHandler(BaseHandler):
 
 class SessionHandler(BaseHandler):
 	def get(self, session):
-		
+		print "Session %s" % session
 		# Get latest stats from Updater
 		session = session.strip()
 		stats = Updater.session_stats(session)
@@ -106,7 +106,9 @@ class EchoWebSocket(tornado.websocket.WebSocketHandler):
 			campboard['ws_clients'].append(self)
 
 		self.write_message(Updater.general_update())
-		self.write_message(Updater.recent_tweets())
+		rt = Updater.recent_tweets()
+		rt.reverse()
+		self.write_message({"recent_tweets": rt})
 		self.receive_message(self.on_message)
 
 	def on_message(self, message):
@@ -179,7 +181,7 @@ class Updater(object):
 		self.incoming.append(data)
 		#self._process_data()
 		self.ws_broadcast(self.update_tweets())
-		#self.ws_broadcast(self.general_update())
+		self.ws_broadcast(self.general_update())
 	
 	
 	@classmethod
@@ -279,11 +281,11 @@ class Updater(object):
 			rt = self.db.query('''SELECT * FROM tweets WHERE id IN (
 					SELECT tweet_id FROM hashtags_tweets WHERE hash_id IN 
 						(SELECT id FROM hashtags WHERE tag=%s)
-					) ORDER BY created_at DESC LIMIT 10 ''', channel)
+					) ORDER BY created_at DESC LIMIT 10''', channel)
 	
 		recent_tweets = [
 			{
-				'text': t.text, 'created_at': unicode(t.created_at), 'id': t.id,
+				'text': unicode(t.text), 'created_at': unicode(t.created_at), 'id': t.id,
 				'user': {
 					'id': t.user_id,
 					'screen_name': t.screen_name,
@@ -292,6 +294,10 @@ class Updater(object):
 			}
 			for t in rt
 		]
+
+		#return {"recent_tweets": recent_tweets}
+		return recent_tweets
+	
 	
 	@classmethod
 	def session_votes(self, session, vote='all'):
@@ -382,7 +388,7 @@ campboard['application'] = Application()
 
 if __name__ == "__main__":
 	
-	threading.Thread(target=Updater.start_updating, name="update_thread", args=('partyblankone', 'partyon', ['108958644'], ['barcamp'])).start()
+	threading.Thread(target=Updater.start_updating, name="update_thread", args=('partyblankone', 'partyon', ['108958644'], ['campboardtest'])).start()
 	print "Starting server"
 	http_server = tornado.httpserver.HTTPServer(campboard['application'])
 	http_server.listen(options.port)
