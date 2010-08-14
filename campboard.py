@@ -8,6 +8,7 @@ import tornado.websocket
 import tornado.database
 
 import os
+import re
 import random
 import json
 import threading
@@ -197,9 +198,29 @@ class Updater(object):
 		except IndexError:
 			pass
 		
+		
+		for s in statuses:
+			tags = re.findall("#([\w]+)", s.text) 
+			print "Tags: "
+			print tags
+			self.db.execute("INSERT INTO tweets (id, user_id, screen_name, profile_image_url, created_at, text) VALUES (%s,%s,%s,%s,%s,%s)", s.id, s.user.id, s.user.screen_name, s.user.profile_image_url, s.created_at, s.text)
 
-		db_entry = [ (s.id, s.user.id, s.user.screen_name, s.user.profile_image_url, s.created_at, s.text) for s in statuses ]
-		self.db.executemany("INSERT INTO tweets (id, user_id, screen_name, profile_image_url, created_at, text) VALUES (%s,%s,%s,%s,%s,%s)", db_entry)
+			# Establish HABTM relationships, tweets with tags
+			for t in tags:
+				print "Inserting tag: %s" % t
+				self.db.execute('''INSERT INTO hashtags (tag) VALUES (%s) ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id), tag=%s; 
+					INSERT INTO hashtags_tweets (hash_id, tweet_id) VALUES (LAST_INSERT_ID(), %s)''', t, t, s.id)
+				
+				# Count the votes while we're at it
+				if t in campboard['sessions']:
+					vote_type = None
+					if re.search('\+1', s.text):
+						vote_type = "positive"
+					elif re.search('\-1', s.text):
+						vote_type = "negative"
+					
+					if vote_type:
+						self.db.execute('INSERT INTO session_votes (session, votes) VALUES (%s, 1) ON DUPLICATE KEY UPDATE votes = votes+1', "%s_%s" % (t, vote_type))
 		
 		broadcast = {}
 		broadcast['recent_tweets'] = [
