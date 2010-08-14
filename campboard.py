@@ -258,7 +258,7 @@ class Updater(object):
 		
 		for session in campboard['sessions']:
 			#broadcast['sessions'][session] = Updater.sessions_stats(session, 'positive').get('session_positive', 0)
-			broadcast['sessions'][session] = self.session_stats(session, 'positive').get('session_positive', random.randint(0,99)) # For FAKE's SAKE!
+			broadcast['sessions'][session] = self.session_votes(session).get('total', random.randint(0,99)) # For FAKE's SAKE!
 			
 			
 		#broadcast['sessions']['nodejs'] = random.randint(30, 99)
@@ -292,8 +292,37 @@ class Updater(object):
 			}
 			for t in rt
 		]
+	
+	@classmethod
+	def session_votes(self, session, vote='all'):
+		'''Returns Tweets for session matching criteria: 'positive' – '+1', 'negative' – '-1', or 'all'/'stats' for both'''
 		
-		return {"recent_tweets": recent_tweets}
+		votes = {}
+		
+# 		if vote in ['positive', 'stats', 'all']:
+# 			res = self.db.query('SELECT votes FROM session_votes WHERE session=%s', '%s_positive' % session)
+# 			if res:
+# 				votes['positive'] = res[0].votes
+# 			else:
+# 				votes['positive'] = 0
+# 		
+# 		if vote in ['negative', 'stats', 'all']:
+# 			res = self.db.query('SELECT votes FROM session_votes WHERE session=%s', '%s_negative' % session)
+# 			if res:
+# 				votes['negative'] = res[0].votes
+# 			else:
+# 				votes['negative'] = 0
+
+		res = self.db.query("SELECT (SELECT votes FROM session_votes WHERE session = %s) AS positive, (SELECT votes FROM session_votes WHERE session = %s) AS negative", "%s_positive" % session, "%s_negative" % session)
+
+		if res:
+			votes['positive'] = res[0].positive or 0
+			votes['negative'] = res[0].negative or 0
+			votes['total'] = votes['positive'] - votes['negative']
+		else:
+			votes['positive'] = votes['negative'] = 0
+
+		return votes
 		
 	
 	@classmethod
@@ -302,13 +331,16 @@ class Updater(object):
 		session = session.strip()
 		broadcast = {}
 
-		if selector in ['positive', 'stats', 'all']:
-			session_positive = self.db.query("SELECT COUNT(*) as positive FROM tweets WHERE text LIKE %s", "+1")[0].positive
-			broadcast['session_positive'] = session_positive
-
-		if selector in ['negative', 'stats', 'all']:
-			session_negative = self.db.query("SELECT COUNT(*) as negative FROM tweets WHERE text LIKE %s", "-1")[0].negative
-			broadcast['session_negative'] = session_negative
+# 		if selector in ['positive', 'stats', 'all']:
+# 			session_positive = self.db.query("SELECT COUNT(*) as positive FROM tweets WHERE text LIKE %s", "+1")[0].positive
+# 			broadcast['session_positive'] = session_positive
+# 
+# 		if selector in ['negative', 'stats', 'all']:
+# 			session_negative = self.db.query("SELECT COUNT(*) as negative FROM tweets WHERE text LIKE %s", "-1")[0].negative
+# 			broadcast['session_negative'] = session_negative
+		
+		if selector in ['positive', 'negative', 'stats', 'all']:
+			broadcast['votes'] = self.session_votes(session, selector)
 		
 
 		if selector in ['tweets', 'all']:					
