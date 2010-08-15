@@ -46,8 +46,7 @@ class Application(tornado.web.Application):
 	def __init__(self):
 		handlers = [
 			(r"/", MainHandler),
-			(r"/echo/", EchoWebSocket),
-			(r"/update/", UpdateHandler),
+			(r"/campsocket/", CampboardSocket),
 			(r"/session/(\w+)/?", SessionHandler)
 		]
 		settings =  {
@@ -83,34 +82,10 @@ class SessionHandler(BaseHandler):
 
 
 
-
-
-class UpdateHandler(BaseHandler):
-	@classmethod
-	def get_updates(data):
-		pass		
-
-	def get(self):
-		# Update all clients
-		for i in campboard['ws_clients']:
-			i.write_message("Greetings! Thanks for being with us today!")
-			i.write_message("There are currently %d clients on board." % len(campboard['ws_clients']))
-			i.write_message("Have a good day ahead!")
-		self.write("OK")
-
-
-
-class EchoWebSocket(tornado.websocket.WebSocketHandler):
+class CampboardSocket(tornado.websocket.WebSocketHandler):
 	def open(self):
-		if self not in campboard['ws_clients']:
-			campboard['ws_clients'].append(self)
-
-		self.write_message(Updater.general_update())
-		rt = Updater.recent_tweets()
-		rt.reverse()
-		self.write_message({"recent_tweets": rt})
 		self.receive_message(self.on_message)
-
+		
 	def on_message(self, message):
 		print "Message: " + message
 		#self.write_message(unicode(dir(self)))
@@ -127,19 +102,38 @@ class EchoWebSocket(tornado.websocket.WebSocketHandler):
 		except:
 			pass
 
-			
-		# Legacy
-		if "Add Session #bcampsg6" in message:
-			for i in campboard['ws_clients']:
-				i.write_message(message)
+		
+		if "Register: " in message:
+			print message
+			session_match = re.search('/session/(?P<session>\w+)', message)
+			if session_match:
+				channel = session_match.group('session')
+				print "Adding to channel: %s" % channel
+				if not campboard['ws_channels'].has_key(channel):
+					campboard['ws_channels'][channel] = []
 				
-		elif "Show clients" in message:
-			self.write_message(unicode(campboard['ws_clients']))
+				campboard['ws_channels'][channel].append(self)
+				#campboard['ws_clients'].remove(self) # Prevent duplication of broadcasts
+			else:
+				print "No match, adding to normal client list"
+				if self not in campboard['ws_clients']:
+					print "Adding to client list"
+					campboard['ws_clients'].append(self)
 			
-		elif message == "Close":
-			campboard['ws_clients'].remove(self)
-		else:
-			self.write_message(u"You said: " + message)
+					
+				self.write_message(Updater.general_update())
+				rt = Updater.recent_tweets()
+				rt.reverse()
+				self.write_message({"recent_tweets": rt})
+				
+		
+		if message == "Close":
+			if self in campboard['ws_clients']:
+				campboard['ws_clients'].remove(self)
+			
+			for channel in campboard['ws_channels']:
+				if self in campboard['ws_channels'][channel]:
+					campboard['ws_channels'][channel].remove(self)
 
 		self.receive_message(self.on_message)
 
@@ -180,8 +174,15 @@ class Updater(object):
 		# Stuff data into database
 		self.incoming.append(data)
 		#self._process_data()
-		self.ws_broadcast(self.update_tweets())
+		rts = self.update_tweets()
+		self.ws_broadcast(rts['general'])
 		self.ws_broadcast(self.general_update())
+		
+		# Session update
+		for s in campboard['sessions']:
+			self.ws_broadcast_channel(s, self.session_stats(s, 'stats'))
+			if rts['channels'].has_key(s):
+				self.ws_broadcast_channel(s, rts['channels'][s])
 	
 	
 	@classmethod
@@ -200,7 +201,10 @@ class Updater(object):
 		except IndexError:
 			pass
 		
-		
+		broadcast = {}
+		broadcast['general'] = {}
+		broadcast['channels'] = {}
+				
 		for s in statuses:
 			tags = re.findall("#([\w]+)", s.text) 
 			print "Tags: "
@@ -215,6 +219,23 @@ class Updater(object):
 				
 				# Count the votes while we're at it
 				if t in campboard['sessions']:
+					
+					# Attach the tweet to the broadcast channel
+					if not broadcast['channels'].has_key(t):
+						broadcast['channels'][t] = {}
+					
+					broadcast['channels'][t]['recent_tweets'] = []
+					broadcast['channels'][t]['recent_tweets'].append(
+						{
+							'text': s.text, 'created_at': unicode(s.created_at), 'id': s.id,
+							'user': {
+								'id': s.user.id,
+								'screen_name': s.user.screen_name,
+								'profile_image_url': s.user.profile_image_url
+							}				
+						}
+					)
+			
 					vote_type = None
 					if re.search('\+1', s.text):
 						vote_type = "positive"
@@ -223,9 +244,10 @@ class Updater(object):
 					
 					if vote_type:
 						self.db.execute('INSERT INTO session_votes (session, votes) VALUES (%s, 1) ON DUPLICATE KEY UPDATE votes = votes+1', "%s_%s" % (t, vote_type))
+				
 		
-		broadcast = {}
-		broadcast['recent_tweets'] = [
+
+		broadcast['general']['recent_tweets'] = [
 			{
 				'text': s.text, 'created_at': unicode(s.created_at), 'id': s.id,
 				'user': {
@@ -260,28 +282,24 @@ class Updater(object):
 		
 		for session in campboard['sessions']:
 			#broadcast['sessions'][session] = Updater.sessions_stats(session, 'positive').get('session_positive', 0)
-			broadcast['sessions'][session] = self.session_votes(session).get('total', random.randint(0,99)) # For FAKE's SAKE!
+			broadcast['sessions'][session] = self.session_votes(session).get('cumulative', random.randint(0,99)) # For FAKE's SAKE!
 			
-			
-		#broadcast['sessions']['nodejs'] = random.randint(30, 99)
-		#broadcast['sessions']['distdb'] = random.randint(15, 76)
-		#broadcast['sessions']['websockets'] = random.randint(24, 83)
-		#broadcast['sessions']['touchtable'] = random.randint(14, 55)
-		
 		return broadcast
 
 
 	@classmethod
-	def recent_tweets(self, channel=None):
+	def recent_tweets(self, channel=None, limit=None):
 		
+		limit = limit or 10
+
 		rt = []
 		if channel is None:
-			rt = self.db.query("SELECT * FROM tweets ORDER BY created_at DESC LIMIT 10")
+			rt = self.db.query("SELECT SQL_CALC_FOUND_ROWS * FROM tweets ORDER BY created_at DESC LIMIT %s", limit)
 		else:
-			rt = self.db.query('''SELECT * FROM tweets WHERE id IN (
+			rt = self.db.query('''SELECT SQL_CALC_FOUND_ROWS * FROM tweets WHERE id IN (
 					SELECT tweet_id FROM hashtags_tweets WHERE hash_id IN 
 						(SELECT id FROM hashtags WHERE tag=%s)
-					) ORDER BY created_at DESC LIMIT 10''', channel)
+					) ORDER BY created_at DESC LIMIT %s''', channel, 10)
 	
 		recent_tweets = [
 			{
@@ -324,7 +342,7 @@ class Updater(object):
 		if res:
 			votes['positive'] = res[0].positive or 0
 			votes['negative'] = res[0].negative or 0
-			votes['total'] = votes['positive'] - votes['negative']
+			votes['cumulative'] = votes['positive'] + votes['negative']
 		else:
 			votes['positive'] = votes['negative'] = 0
 
@@ -336,6 +354,8 @@ class Updater(object):
 	
 		session = session.strip()
 		broadcast = {}
+		
+		broadcast['channel'] = session
 
 # 		if selector in ['positive', 'stats', 'all']:
 # 			session_positive = self.db.query("SELECT COUNT(*) as positive FROM tweets WHERE text LIKE %s", "+1")[0].positive
@@ -355,9 +375,12 @@ class Updater(object):
 
 		if selector in ['tweetcount', 'stats', 'all']:
 			tweet_count = self.db.query('''SELECT COUNT(*) AS tweet_count FROM tweets WHERE id IN (
-					SELECT tweet_id FROM hashtags_tweets WHERE hash_id IN 
-						(SELECT id FROM hashtags WHERE tag=%s)
-					) ORDER BY created_at DESC''', session)[0].tweet_count
+							SELECT tweet_id FROM hashtags_tweets WHERE hash_id IN
+								(SELECT id FROM hashtags WHERE tag=%s)
+							) ORDER BY created_at DESC''', session)[0].tweet_count
+			
+			#self.db.query("SELECT FOUND_ROWS() AS tweet_count")[0].tweet_count # Requires SQL_CALC_FOUND_ROWS() to be used in immediate previous SQL query
+			
 			broadcast['tweet_count'] = tweet_count
 
 		return broadcast
@@ -365,8 +388,9 @@ class Updater(object):
 	
 	@classmethod
 	def ws_broadcast_channel(self, channel, data):
-		for i in campboard['ws_channels'][channel]:
-			i.write_message(data)
+		if campboard['ws_channels'].has_key(channel):
+			for i in campboard['ws_channels'][channel]:
+				i.write_message(data)
 			
 	
 	@classmethod

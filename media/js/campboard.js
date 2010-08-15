@@ -1,7 +1,13 @@
 var CampBoard = CampBoard || {}
 
 CampBoard.ws_init = function(){
-	this.ws = new WebSocket("ws://ubuntuvm:8888/echo/");
+	this.ws = new WebSocket("ws://ubuntuvm:8888/campsocket/");
+	
+	this.ws.onopen = function(){
+		console.log("Registering")
+		console.log(this.send("Register: " + document.URL))
+	}
+	
 	this.ws.onmessage = function(msg) {
 		console.log("Received");
 		console.log(msg);
@@ -11,16 +17,16 @@ CampBoard.ws_init = function(){
 		//$(l).html(msg.data)
 		//$(l).insertBefore($("#echo > li:first-child"))
 		
-		CampBoard.parse_message(msg);
+		CampBoard.parse_message(msg.data);
 	}
 }
 
-CampBoard.parse_message = function(msg) {
+CampBoard.parse_message = function(data) {
 	console.log("Parsing!")
-	console.log(msg.data)
+	console.log(data)
 	
 	try {
-		var data = JSON.parse(msg.data); // Extract the data
+		var data = JSON.parse(data); // Extract the data
 		
 		if(data['total_tweets']) {
 			$('#total-tweets').html(data['total_tweets']);
@@ -53,7 +59,7 @@ CampBoard.parse_message = function(msg) {
 			var sess = data['sessions'];
 			if(sess instanceof Object) {
 				for(var i in sess) {
-					var sess_format = "<span class='session-title'><a href='/session/" + i + "/'>#" + i + "</a></span> - <span class='session-count'>" + sess[i] + "</span>";
+					var sess_format = "<span class='session-title'><a href='/session/" + i + "/'>#" + i + "</a></span> - <span class='session-count'>" + sess[i] + " votes</span>";
 					if($('#session-' + i).length == 0) { // Listing for session does not exist yet
 						var html = "<li class='session' id='session-" + i + "'>"; // So we have to create our own <li>
 						html += sess_format;
@@ -75,6 +81,18 @@ CampBoard.parse_message = function(msg) {
 		}	
 		
 		
+		// If we're on a session page
+		if(data['channel'] && document.URL.match(/\/session\/(\w+)/)[1] == data['channel']) {
+			if(data['votes']) {
+				$('#session-vote-positive').html(data['votes']['positive'])
+				$('#session-vote-negative').html(data['votes']['negative'])
+				$('#session-votes-total').html(data['votes']['positive'] + data['votes']['negative'])
+				$('#session-tweet-count').html(data['tweet_count'])
+			}
+		}
+		
+
+
 		if(data['broadcast_message']) {
 			$('#broadcast').html(data['broadcast_message']);
 			$('#broadcast').show()

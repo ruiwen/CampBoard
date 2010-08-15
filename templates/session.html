@@ -9,14 +9,14 @@
 		<h2>Votes</h2>
 		<ul>
 			{% if stats['votes']['positive'] + stats['votes']['negative'] > 0 %}
-				<li><span class="session-vote">Positive</span> - <span class="session-vote-count">{{ stats['votes']['positive'] }}</span></li>
-				<li><span class="session-vote">Negative</span> - <span class="session-vote-count">{{ stats['votes']['negative'] }}</span></li>
+				<li><span class="session-vote">Positive</span> - <span id="session-vote-positive" class="session-vote-count">{{ stats['votes']['positive'] }}</span></li>
+				<li><span class="session-vote">Negative</span> - <span id="session-vote-negative" class="session-vote-count">{{ stats['votes']['negative'] }}</span></li>
 			{% else %}
 				<li><span class="placeholder">No votes yet</span></li>
 			{% end %}
 		</ul>
-		<h2 id="session-votes-total"><span class="session-vote-total">Total votes</span> - <span class="session-vote-count">{{ stats['votes']['positive'] + stats['votes']['negative'] }}</span></h2>
-		<h2><span class="session-tweets">Total mentions</span> - <span class="session-tweet-count">{{ stats['tweet_count'] }}</span></h2>
+		<h2><span class="session-vote">Total votes</span> - <span id="session-votes-total">{{ stats['votes']['positive'] + stats['votes']['negative'] }}</span></h2>
+		<h2><span class="session-vote">Total mentions</span> - <span id="session-tweet-count">{{ stats['tweet_count'] }}</span></h2>
 
 		<div id="session-graph">
 			<!-- Implement graph here -->
@@ -27,7 +27,7 @@
 
 	<div id="session-recent">
 		<h2>Recent comments on #{{ session }}</h2>
-		<ul>
+		<ul id="recent-tweets">
 			{% if stats['recent_tweets'] %}
 				{% for tweet in stats['recent_tweets'] %}
 					<li class="tweet">
