@@ -1,33 +1,36 @@
 var CampBoard = CampBoard || {}
 
 CampBoard.ws_init = function(){
-	this.ws = new WebSocket("ws://ubuntuvm:8888/campsocket/");
+	this.ws = $.gracefulWebSocket("ws://ubuntuvm:8888/campsocket/", {fallbackSendURL: "http://ubuntuvm:8080/poll/", fallbackPollURL: "http://ubuntuvm:8080/poll/", fallbackPollInterval: 5000})
+	//new WebSocket("ws://ubuntuvm:8888/campsocket/");
 	
 	this.ws.onopen = function(){
 		console.log("Registering")
-		console.log(this.send("Register: " + document.URL))
+		console.log((this.send("Register: " + document.URL)?"Sent":"Unsent"));
 	}
 	
 	this.ws.onmessage = function(msg) {
+		//alert("Received");
 		console.log("Received");
-		console.log(msg);
-		//var e = document.getElementById("echo");
-		//e.innerHTML = e.innerHTML + "\r\n" + msg.data;
-		//var l = $('<li></li>');
-		//$(l).html(msg.data)
-		//$(l).insertBefore($("#echo > li:first-child"))
+		console.log(msg.data);
 		
-		CampBoard.parse_message(msg.data);
+		CampBoard.parse_message(msg['data']);
+	}
+	
+	this.ws.onerror = function(textStatus, e) {
+		console.log("Error")
+		console.log(textStatus);
+		console.log(e)
 	}
 }
 
-CampBoard.parse_message = function(data) {
+CampBoard.parse_message = function(d) {
 	console.log("Parsing!")
-	console.log(data)
-	
+	console.log(d)
 	try {
-		var data = JSON.parse(data); // Extract the data
-		
+		var data = $.parseJSON(d); //JSON.parse(data); // Extract the data
+
+	
 		if(data['total_tweets']) {
 			$('#total-tweets').html(data['total_tweets']);
 		}
@@ -91,15 +94,16 @@ CampBoard.parse_message = function(data) {
 			}
 		}
 		
-
-
+	
+	
 		if(data['broadcast_message']) {
 			$('#broadcast').html(data['broadcast_message']);
 			$('#broadcast').show()
 		}
 	}
 	catch(e) {
-		// pass
+		alert(e)
+		//alert("Uhoh");
 	}
 }
 

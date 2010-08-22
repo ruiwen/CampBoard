@@ -47,7 +47,8 @@ class Application(tornado.web.Application):
 		handlers = [
 			(r"/", MainHandler),
 			(r"/campsocket/", CampboardSocket),
-			(r"/session/(\w+)/?", SessionHandler)
+			(r"/session/(\w+)/?", SessionHandler),
+			(r"/poll/?", PollHandler),
 		]
 		settings =  {
 			'debug': True,
@@ -80,6 +81,31 @@ class SessionHandler(BaseHandler):
 		stats = Updater.session_stats(session)
 		self.render('session.html', session=session, stats=stats)
 
+class PollHandler(BaseHandler):
+	def get(self):
+		print "GET: %s" % self.request.body
+		#print unicode(self.request.headers['Referer'])
+		self.write({"a":1})
+		
+		
+	def post(self):
+		print "POST: %s" % self.request.body
+		if "Register: " in self.request.body:
+			session_match = re.search('/session/(?P<session>\w+)', self.request.body)
+			if session_match:
+				channel = session_match.group('session')
+				
+				self.write({"a":1})
+			else:
+				broadcast = {}
+				broadcast.update(Updater.general_update())
+				#rt = Updater.recent_tweets()
+				#rt.reverse()
+				#broadcast.update({"recent_tweets": rt})
+				
+				self.write(tornado.escape.json_encode(broadcast))
+		else:
+			self.write({"a":3})
 
 
 class CampboardSocket(tornado.websocket.WebSocketHandler):
