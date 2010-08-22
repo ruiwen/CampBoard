@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+
+{% block main %}
+	<h1>Admin</h1>
+	<div id="admin-stats">
+		<ul id="admin-stats-list">
+			<li class="admin-stats">Total tweeters: <span id="total-tweets">0</span></li>
+			<li class="admin-stats">Unique tweeters: <span id="unique-tweeters">0</span></li>
+			<li class="admin-stats">Total sessions: <span id="total-sessions">0</span></li>
+		</ul>
+	</div>
+	
+	<div id="admin-sessions">
+		<ul>
+			{% if sessions %}
+				{% for s in sessions %}
+					<li class="admin-session">{{ s['name'] }}: {{ s['votes'] }}</li>
+				{% end %}
+			{% else %}
+				<li class="placeholder">None yet.</li>
+			{% end %}
+		</ul>
+	</div>
+	
+	<div id="admin-controls">
+		<li><input type="text" placeholder="Add session?" name="session-add"><input type='submit' value="Add session"></li>
+		<li><input type="text" placeholder="Remove session?" name="session-remove"><input type='submit' value='Remove session'></li>
+		<li><input type="text" placeholder="Broadcast message" name="message-broadcast"><input type='submit' value='Broadcast message'></li>
+	</div>
+
+{% end %}

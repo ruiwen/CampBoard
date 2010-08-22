@@ -38,6 +38,11 @@ CampBoard.parse_message = function(d) {
 		if(data['unique_tweeters']) {
 			$('#unique-tweeters').html(data['unique_tweeters'])
 		}
+
+		if(data['sessions_number']) {
+			$('#total-sessions').html(data['sessions_number'])
+		}
+
 		
 		if(data['recent_tweets']) {
 			rts = data['recent_tweets']

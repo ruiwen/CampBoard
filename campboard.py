@@ -6,6 +6,7 @@ import tornado.ioloop
 import tornado.web
 import tornado.websocket
 import tornado.database
+import tornado.escape
 
 import os
 import re
@@ -49,13 +50,14 @@ class Application(tornado.web.Application):
 			(r"/campsocket/", CampboardSocket),
 			(r"/session/(\w+)/?", SessionHandler),
 			(r"/poll/?", PollHandler),
+			(r"/admin/?", AdminHandler)
 		]
 		settings =  {
 			'debug': True,
 			'template_path': os.path.join(os.path.dirname(__file__), "templates"),
 			'static_path': os.path.join(os.path.dirname(__file__), "static"),
-				#'xsrf_cookies': True,
-				#'cookie_secret': "12!@#as.dq23/adskjlA1@d33c2t2#25tcf??.43%?1",
+			#'xsrf_cookies': True,
+			'cookie_secret': "2kljq34@#41wedljasxC?+@#+DSWq	2#_!@#()FDM09q34kmndfo",
 		}
 		tornado.web.Application.__init__(self, handlers, **settings)
 	
@@ -67,8 +69,14 @@ class BaseHandler(tornado.web.RequestHandler):
     def db(self):
         return self.application.db
 
+	@property
+	def current_user(self):
+		return self.get_secure_cookie("user")
+
+
 class MainHandler(BaseHandler):
 	def get(self):
+		print "Main"
 		# Craft a broadcast object on first load to seed the page with relevant data
 		self.render("index.html")
 
@@ -108,7 +116,26 @@ class PollHandler(BaseHandler):
 			self.write({"a":3})
 
 
+
+class AdminHandler(BaseHandler):
+	def get(self):
+		user = self.get_secure_cookie('user')
+		if user and user == 'campmin':
+			sessions = []
+			self.render("admin.html", sessions=sessions)
+		else:
+			self.render("admin-unauth.html")
+		
+	def post(self):
+		if self.get_argument("adpass") == 'campilicious':
+			self.set_secure_cookie('user', 'campmin')
+			self.redirect('/admin/')
+		else:
+			self.redirect('/')
+
+		
 class CampboardSocket(tornado.websocket.WebSocketHandler):
+
 	def open(self):
 		self.receive_message(self.on_message)
 		
@@ -309,6 +336,9 @@ class Updater(object):
 		for session in campboard['sessions']:
 			#broadcast['sessions'][session] = Updater.sessions_stats(session, 'positive').get('session_positive', 0)
 			broadcast['sessions'][session] = self.session_votes(session).get('cumulative', random.randint(0,99)) # For FAKE's SAKE!
+				
+
+		broadcast['sessions_number'] = len(campboard['sessions'])
 			
 		return broadcast
 
