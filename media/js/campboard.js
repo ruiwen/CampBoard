@@ -112,6 +112,19 @@ CampBoard.parse_message = function(d) {
 	}
 }
 
+
+CampBoard.send_message = function(method, channel, data) {
+
+	// Trap defaults
+	channel = channel || '';
+	
+	// Fail with improper params
+	if(!method){ return false; }
+	
+	this.ws.send(JSON.stringify({'method':method, 'channel':channel, 'data':data}));
+	
+}
+
 if(jQuery) {
 	$(window).load(function() {
 		CampBoard.ws_init();
