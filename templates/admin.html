@@ -1,5 +1,24 @@
 {% extends "base.html" %}
 
+{% block js %}
+	<script>
+		CampBoard.Admin = CampBoard.Admin || {};
+
+		CampBoard.Admin.SessionAdd = function(sess) {
+			CampBoard.send_message('session_add', null, sess);
+			$('#session-add').val('');
+		}
+		
+		CampBoard.Admin.SessionRemove = function(sess) {
+			CampBoard.send_message('session_remove', null, sess);
+			$('#session-remove').val('')
+		}
+		
+		CampBoard.Admin.MessageBroadcast = function(msg) {
+			CampBoard.send_message('broadcast_message', null, msg);
+		}
+	</script>
+{% end %}
 
 {% block main %}
 	<h1>Admin</h1>
@@ -12,10 +31,11 @@
 	</div>
 	
 	<div id="admin-sessions">
+		<h1>Sessions</h1>
 		<ul>
 			{% if sessions %}
 				{% for s in sessions %}
-					<li class="admin-session">{{ s['name'] }}: {{ s['votes'] }}</li>
+					<li class="admin-session">{{ s }}: {{ sessions[s]['cumulative'] }}</li>
 				{% end %}
 			{% else %}
 				<li class="placeholder">None yet.</li>
@@ -24,9 +44,9 @@
 	</div>
 	
 	<div id="admin-controls">
-		<li><input type="text" placeholder="Add session?" name="session-add"><input type='submit' value="Add session"></li>
-		<li><input type="text" placeholder="Remove session?" name="session-remove"><input type='submit' value='Remove session'></li>
-		<li><input type="text" placeholder="Broadcast message" name="message-broadcast"><input type='submit' value='Broadcast message'></li>
+		<li><input type="text" placeholder="Add session?" id="session-add"><input type='submit' value="Add session" onclick="CampBoard.Admin.SessionAdd($('#session-add').val())"></li>
+		<li><input type="text" placeholder="Remove session?" id="session-remove"><input type='submit' value='Remove session' onclick="CampBoard.Admin.SessionRemove($('#session-remove').val())"></li>
+		<li><input type="text" placeholder="Broadcast message" id="message-broadcast"><input type='submit' value='Broadcast message' onclick="CampBoard.Admin.MessageBroadcast($('#message-broadcast').val())"></li>
 	</div>
 
 {% end %}
