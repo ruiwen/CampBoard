@@ -121,7 +121,11 @@ class AdminHandler(BaseHandler):
 	def get(self):
 		user = self.get_secure_cookie('user')
 		if user and user == 'campmin':
-			sessions = []
+			
+			sessions = {}
+			for s in campboard['sessions']:
+				sessions[s] = Updater.session_votes(s)
+			print unicode(sessions)
 			self.render("admin.html", sessions=sessions)
 		else:
 			self.render("admin-unauth.html")
@@ -152,7 +156,24 @@ class CampboardSocket(tornado.websocket.WebSocketHandler):
 					stats = Updater.session_stats(msg['session'])
 					Updater.ws_broadcast_channel(msg['session'], stats)
 			
-		except:
+			
+			if msg['method'] == 'session_add':
+				Updater.session_add(msg['data'])
+				
+			
+			if msg['method'] == 'session_remove':
+				Updater.session_remove(msg['data'])
+				
+			
+			if msg['method'] == 'broadcast_message':
+				if msg['channel']:
+					Updater.ws_broadcast_channel(msg['channel'], msg['data'])
+				
+				else:
+					Updater.ws.broadcast(msg['msg'])
+					
+		except Exception as e:
+			print "Message parse failed: %s" % (unicode(e))
 			pass
 
 		
@@ -441,6 +462,16 @@ class Updater(object):
 
 		return broadcast
 
+	
+	@classmethod
+	def session_add(self, sess):
+		campboard['sessions'].append(sess)
+		print unicode(campboard['sessions'])
+	
+	@classmethod
+	def session_remove(self, sess):
+		campboard['sessions'].remove(sess)
+		print unicode(campboard['sessions'])
 	
 	@classmethod
 	def ws_broadcast_channel(self, channel, data):
