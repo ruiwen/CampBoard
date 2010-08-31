@@ -32,14 +32,8 @@
 	
 	<div id="admin-sessions">
 		<h1>Sessions</h1>
-		<ul>
-			{% if sessions %}
-				{% for s in sessions %}
-					<li class="admin-session">{{ s }}: {{ sessions[s]['cumulative'] }}</li>
-				{% end %}
-			{% else %}
-				<li class="placeholder">None yet.</li>
-			{% end %}
+		<ul id="session-stats-list">
+			<li class="placeholder">None yet.</li>
 		</ul>
 	</div>
 	
