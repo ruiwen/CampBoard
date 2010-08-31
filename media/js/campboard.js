@@ -82,7 +82,12 @@ CampBoard.parse_message = function(d) {
 						}
 					}
 					else {
-						$('#session-' + i).eq(0).html(sess_format); // Otherwise we just substitute the contents of the appropriate <li>
+						if(sess[i] == 'DEL') {
+							$('#session-' + i).remove()
+						}
+						else {
+							$('#session-' + i).eq(0).html(sess_format); // Otherwise we just substitute the contents of the appropriate <li>
+						}
 					}
 				}
 			}
