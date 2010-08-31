@@ -120,13 +120,8 @@ class PollHandler(BaseHandler):
 class AdminHandler(BaseHandler):
 	def get(self):
 		user = self.get_secure_cookie('user')
-		if user and user == 'campmin':
-			
-			sessions = {}
-			for s in campboard['sessions']:
-				sessions[s] = Updater.session_votes(s)
-			print unicode(sessions)
-			self.render("admin.html", sessions=sessions)
+		if user and user == 'campmin':			
+			self.render("admin.html")
 		else:
 			self.render("admin-unauth.html")
 		
@@ -356,6 +351,8 @@ class Updater(object):
 		
 		for session in campboard['sessions']:
 			#broadcast['sessions'][session] = Updater.sessions_stats(session, 'positive').get('session_positive', 0)
+			
+			# TODO: REMOVE RANDOM CALL BEFORE PRODUCTION!
 			broadcast['sessions'][session] = self.session_votes(session).get('cumulative', random.randint(0,99)) # For FAKE's SAKE!
 				
 
@@ -419,7 +416,7 @@ class Updater(object):
 		if res:
 			votes['positive'] = res[0].positive or 0
 			votes['negative'] = res[0].negative or 0
-			votes['cumulative'] = votes['positive'] + votes['negative']
+			votes['cumulative'] = votes['positive'] - votes['negative']
 		else:
 			votes['positive'] = votes['negative'] = 0
 
@@ -467,11 +464,18 @@ class Updater(object):
 	def session_add(self, sess):
 		campboard['sessions'].append(sess)
 		print unicode(campboard['sessions'])
+		
+		self.ws_broadcast(self.general_update())
+
 	
 	@classmethod
 	def session_remove(self, sess):
 		campboard['sessions'].remove(sess)
 		print unicode(campboard['sessions'])
+		gen = self.general_update()		
+		gen['sessions'][sess] = "DEL" # Set DEL to indicate removal
+		self.ws_broadcast(gen)
+		
 	
 	@classmethod
 	def ws_broadcast_channel(self, channel, data):
