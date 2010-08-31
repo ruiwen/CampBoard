@@ -1,4 +1,187 @@
+/* Eric Meyer's Reset Reloaded */
+/* http://meyerweb.com/eric/thoughts/2007/05/01/reset-reloaded/ */
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, font, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	outline: 0;
+	font-size: 100%;
+	vertical-align: baseline;
+	background: transparent;
+}
+body {
+	line-height: 1;
+}
+ol, ul {
+	list-style: none;
+}
+blockquote, q {
+	quotes: none;
+}
+/* remember to define focus styles! */
+:focus {
+	outline: 0;
+}
+/* remember to highlight inserts somehow! */
+ins {
+	text-decoration: none;
+}
+del {
+	text-decoration: line-through;
+}
+/* tables still need 'cellspacing="0"' in the markup */
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+
+/** General styling **/
+body {
+	color: #444;
+	font-family: "Helvetica", "Arial", sans-serif;
+}
+
+h1 {
+	font-size: 48px;
+}
+
+h2 {
+	font-size: 44px;
+}
+
+h3 {
+	font-size: 40px;
+}
+
+a {
+	text-decoration: underline;
+}
+
+a:visited {
+	color: #666;
+}
+
+
+/** Header Styling **/
+header {
+	-moz-border-radius-bottomleft: 5px;
+	-moz-border-radius-bottomright: 5px;
+	-webkit-border-bottom-left-radius: 5px;
+	-webkit-border-bottom-right-radius: 5px;
+	-moz-box-shadow: 0px 3px 5px grey;
+	-webkit-box-shadow: 0px 3px 5px grey;
+	margin-bottom: 30px;
+	padding: 1px 0px;
+}
+
+header a {
+	text-decoration: none;
+}
+
+header h1 {
+	margin: 15px;
+}
+
+/** Stats styling **/
+.stats-list li {
+	border-bottom: 5px solid #333;
+	margin: 15px 0px;
+	padding: 8px;
+}
+
+.stats-header {
+	/** Reset **/
+	-moz-border-radius-bottomleft: 0px;
+	-moz-border-radius-bottomright: 0px;
+	-webkit-border-bottom-left-radius: 0px;
+	-webkit-border-bottom-right-radius: 0px;
+	-moz-box-shadow: none;
+	-webkit-box-shadow: none;
+	margin-bottom: 0px;
+	padding: 0px;
+	
+	/** Actual styling **/
+	-webkit-transform-origin: center center;
+	-moz-transform: rotate(-90deg);
+	-webkit-transform: rotate(30deg);
+	color: #dd3322;
+	display: inline-block;
+	font-size: 0.6em;
+	position: relative;
+	left: 80%;
+	top: 5%;
+}
+
+.stats-header:hover {
+	top: 4.5%;
+}
+
+.stats-label {
+	display: inline-block;
+	vertical-align: top;
+	width: 8em;
+}
+
+.stats-label a {
+	text-decoration: none;
+}
+
+.stats-label a:after {
+	content: '\0A0 \0BB';
+}
+
+.stats-label a:hover {
+	position: relative;
+	left: 5px;
+}
+
+.stats-value {
+/* 	display: inline-block; */
+	font-family: "Georgia", serif;
+	font-size: 2.8em;
+	vertical-align: top;
+}
+
+
+/** Main **/
+#main {
+	margin: auto;
+	width: 80%;
+}
+
+#main header {
+/* 	margin-bottom: 20px; */
+}
+
+#main-stats {
+	margin-right: 5em;
+}
+
+#main-stats, #session-stats {
+	display: inline-block;
+	vertical-align: top;
+}
+
+
 #main-recent {
-	height: 200px;
-	overflow-y: scroll;
+	/*height: 200px;
+	overflow-y: scroll;*/
+}
+
+.tweet-permalink {
+	color: #777;
+	font-family: "Georgia", serif;
+	font-style: italic;
+}
+
+.tweet-permalink a {
+	color: #777;
 }
