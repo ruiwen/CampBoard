@@ -67,7 +67,7 @@ CampBoard.parse_message = function(d) {
 			var sess = data['sessions'];
 			if(sess instanceof Object) {
 				for(var i in sess) {
-					var sess_format = "<span class='session-title'><a href='/session/" + i + "/'>#" + i + "</a></span> - <span class='session-count'>" + sess[i] + " votes</span>";
+					var sess_format = "<h2><span class='session-title stats-label'><a href='/session/" + i + "/'>#" + i + "</a></span>  <span class='session-count stats-value'>+" + sess[i] + "</span></h2>";
 					if($('#session-' + i).length == 0) { // Listing for session does not exist yet
 						var html = "<li class='session' id='session-" + i + "'>"; // So we have to create our own <li>
 						html += sess_format;
