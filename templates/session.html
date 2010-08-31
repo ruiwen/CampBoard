@@ -20,8 +20,15 @@
 
 		<div id="session-graph">
 			<!-- Implement graph here -->
-			
-			{{ stats['votes']['positive'] }} / {{ stats['votes']['negative'] }}
+			<img src="http://chart.apis.google.com/chart
+				   ?chxs=0,676767,40
+				   &chxt=x
+				   &chs=300x150
+				   &cht=p
+				   &chco=5B9DC8
+				   &chd=t:{{ stats['votes']['positive'] }},{{ stats['votes']['negative'] }}
+				   &chp=0.628
+				   &chl=Yes|No" height="150" width="300">
 		</div>
 	</div>
 
