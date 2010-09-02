@@ -201,6 +201,18 @@ header h1 {
 	color: #777;
 }
 
+
+/** Placeholder **/
+.placeholder {
+	color: #ccc;
+	font-family: "Georgia", serif;
+	font-size: 8.0em;
+	font-style: italic;
+	text-align: center;
+	text-transform: lowercase;
+}
+
+
 /** Main **/
 #main {
 	margin: auto;
@@ -271,4 +283,75 @@ footer {
 	font-style: italic;
 	margin: 20px auto;
 	text-align: center;
+}
+
+
+/** Admin styling **/
+#saywhat {
+	text-align: center;
+}
+
+#saywhat input {
+	border: none;
+	border-bottom: 2px dotted #ccc;
+	font-size: 4.0em;
+}
+
+#admin-stats-list li {
+	display: inline-block;
+	width: 17.5em;
+}
+
+#admin-stats h1,
+#admin-sessions h1,
+#admin-controls h1 {
+	color: #dd3322;
+}
+
+#admin-sessions,
+#admin-controls {
+	display: inline-block;
+	margin-top: 30px;
+	vertical-align: top;
+	width: 440px;
+}
+
+#admin-sessions {
+
+}
+
+
+#admin-controls ul {
+	list-style-type: none;
+	padding-left: 20px;
+}
+
+#admin-controls ul li {
+	margin: 15px 0px;
+	vertical-align: top;
+}
+
+#admin-controls input[type=text] {
+	color: #444;
+	font-size: 2em;
+	margin-right: 5px;
+	width: 9.8em;
+}
+
+#admin-controls input[type=submit] {
+	background: none;
+	border: none;
+	color: #555;
+	font-family: "Georgia", serif;
+	font-size: 3.1em;
+	font-style: bold;
+	height: 1.0em;
+	text-align: center;
+	width: 1.0em;
+}
+
+#admin-controls input[type=submit]:hover {
+	color: #dd3322;
+	-moz-transform: scale(2.0);
+	-webkit-transform: scale(2.0);
 }
