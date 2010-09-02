@@ -50,15 +50,15 @@ body {
 }
 
 h1 {
-	font-size: 48px;
+	font-size: 40px;
 }
 
 h2 {
-	font-size: 44px;
+	font-size: 36px;
 }
 
 h3 {
-	font-size: 40px;
+	font-size: 32px;
 }
 
 a {
@@ -71,7 +71,8 @@ a:visited {
 
 
 /** Header Styling **/
-header {
+#masthead {
+/*
 	-moz-border-radius-bottomleft: 5px;
 	-moz-border-radius-bottomright: 5px;
 	-webkit-border-bottom-left-radius: 5px;
@@ -80,6 +81,7 @@ header {
 	-webkit-box-shadow: 0px 3px 5px grey;
 	margin-bottom: 30px;
 	padding: 1px 0px;
+*/
 }
 
 header a {
@@ -127,7 +129,7 @@ header h1 {
 .stats-label {
 	display: inline-block;
 	vertical-align: top;
-	width: 8em;
+	width: 5em;
 }
 
 .stats-label a {
@@ -144,30 +146,61 @@ header h1 {
 }
 
 .stats-value {
-/* 	display: inline-block; */
+	display: inline-block;
 	font-family: "Georgia", serif;
-	font-size: 2.8em;
+	font-size: 2.5em;
 	vertical-align: top;
 }
 
 
+/** Tweet list styling **/
+#recent-tweets li {
+/* 	height: 4.0em; */
+	padding: 20px 10px;
+	margin: 30px 0px;
+}
+
+.tweet-image {
+	float: left;
+}
+
+.tweet-text {
+	font-family: "Georgia", serif;
+	font-size: 2.0em;
+	margin-right: 10px;
+	padding-left: 63px;
+	text-align: right;
+/* 	width: 10.0em; */
+}
+
+.tweet-permalink {
+	clear: both;
+	text-align: right;
+}
+
 /** Main **/
 #main {
 	margin: auto;
-	width: 80%;
+	max-width: 900px;
 }
 
 #main header {
 /* 	margin-bottom: 20px; */
 }
 
-#main-stats {
-	margin-right: 5em;
+#tweet-stats {
+	margin-right: 2em;
 }
 
-#main-stats, #session-stats {
+#tweet-stats .stats-label {
+	width: 7em;
+}
+
+
+#tweet-stats, #session-stats {
 	display: inline-block;
 	vertical-align: top;
+	width: 45%;
 }
 
 
