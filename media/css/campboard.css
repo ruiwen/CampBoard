@@ -62,6 +62,7 @@ h3 {
 }
 
 a {
+	color: #555;
 	text-decoration: underline;
 }
 
@@ -99,7 +100,7 @@ header h1 {
 	padding: 8px;
 }
 
-.stats-header {
+.styled-header {
 	/** Reset **/
 	-moz-border-radius-bottomleft: 0px;
 	-moz-border-radius-bottomright: 0px;
@@ -122,7 +123,7 @@ header h1 {
 	top: 5%;
 }
 
-.stats-header:hover {
+.styled-header:hover {
 	top: 4.5%;
 }
 
@@ -154,20 +155,34 @@ header h1 {
 
 
 /** Tweet list styling **/
+#recent-tweets {
+	margin: auto;
+	width: 70%;
+}
+
 #recent-tweets li {
 /* 	height: 4.0em; */
+	border-bottom: 1px dotted #ccc;
 	padding: 20px 10px;
 	margin: 30px 0px;
 }
 
+.tweet {
+	overflow: hidden;
+	width: 100%;
+}
+
 .tweet-image {
+	display: inline-block;
 	float: left;
 }
 
 .tweet-text {
 	font-family: "Georgia", serif;
+	font-style: bold;
 	font-size: 2.0em;
 	margin-right: 10px;
+	padding-bottom: 5px;
 	padding-left: 63px;
 	text-align: right;
 /* 	width: 10.0em; */
@@ -175,7 +190,15 @@ header h1 {
 
 .tweet-permalink {
 	clear: both;
+	color: #777;
+	font-family: "Georgia", serif;
+	font-style: italic;
+	font-size: 0.5em;
 	text-align: right;
+}
+
+.tweet-permalink a {
+	color: #777;
 }
 
 /** Main **/
@@ -205,16 +228,47 @@ header h1 {
 
 
 #main-recent {
-	/*height: 200px;
-	overflow-y: scroll;*/
+	margin-top: 30px;
 }
 
-.tweet-permalink {
-	color: #777;
+#main-recent header {
+	top: 8%;
+	left: 88%%;
+}
+
+#main-recent header:hover {
+	top: 7.5%;
+}
+
+/** Session styling **/
+
+#session-votes-stats, 
+#session-graph {
+	display: inline-block;
+	vertical-align: top;
+	width: 400px;
+}
+
+#session-graph {
+	position: relative;
+	top: -60px;
+}
+.session-vote {
+	font-size: 3em;
+	padding-left: 1em;
+}
+
+.session-vote-label {
+	width: 8em;
+}
+
+
+/** Footer styling **/
+
+footer {
 	font-family: "Georgia", serif;
+	font-size: 0.8em;
 	font-style: italic;
-}
-
-.tweet-permalink a {
-	color: #777;
+	margin: 20px auto;
+	text-align: center;
 }
