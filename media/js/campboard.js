@@ -49,9 +49,9 @@ CampBoard.parse_message = function(d) {
 			for(var i=0; i<rts.length; ++i) {
 				var html = "<li><div class='tweet'>"
 				html += "<a class='tweet-image' href='http://twitter.com/" + rts[i]['user']['screen_name'] + "'><img src='" + rts[i]['user']['profile_image_url'] + "'></a>";
-				html +=	"<p class='tweet-text'>" + rts[i]['text'] + "</p>";
+				html +=	"<p class='tweet-text'>" + rts[i]['text'] + "</p></div>";
 				html += "<small class='tweet-permalink' target='_blank'><a href='http://twitter.com/" + rts[i]['user']['screen_name'] + "/status/" + rts[i]['id'] + "/'>permalink</a></small>"; 
-				html += "</div></li>";
+				html += "</li>";
 				
 				if($('#recent-tweets > .placeholder:first-child').length == 1) {
 					$(html).insertBefore($('#recent-tweets > .placeholder:first-child'));
@@ -67,7 +67,7 @@ CampBoard.parse_message = function(d) {
 			var sess = data['sessions'];
 			if(sess instanceof Object) {
 				for(var i in sess) {
-					var sess_format = "<h2><span class='session-title stats-label'><a href='/session/" + i + "/'>#" + i + "</a></span>  <span class='session-count stats-value'>+" + sess[i] + "</span></h2>";
+					var sess_format = "<h2><span class='stats-label session-title'><a href='/session/" + i + "/'>#" + i + "</a></span>  <span class='session-count stats-value'>+" + sess[i] + "</span></h2>";
 					if($('#session-' + i).length == 0) { // Listing for session does not exist yet
 						var html = "<li class='session' id='session-" + i + "'>"; // So we have to create our own <li>
 						html += sess_format;
