@@ -7,40 +7,49 @@
 {% block main %}
 	<div id="session-votes">
 		<h2>Votes</h2>
-		<ul>
-			{% if stats['votes']['positive'] + stats['votes']['negative'] > 0 %}
-				<li><span class="session-vote">Positive</span> - <span id="session-vote-positive" class="session-vote-count">{{ stats['votes']['positive'] }}</span></li>
-				<li><span class="session-vote">Negative</span> - <span id="session-vote-negative" class="session-vote-count">{{ stats['votes']['negative'] }}</span></li>
-			{% else %}
-				<li><span class="placeholder">No votes yet</span></li>
-			{% end %}
-		</ul>
-		<h2><span class="session-vote">Total votes</span> - <span id="session-votes-total">{{ stats['votes']['positive'] + stats['votes']['negative'] }}</span></h2>
-		<h2><span class="session-vote">Total mentions</span> - <span id="session-tweet-count">{{ stats['tweet_count'] }}</span></h2>
+		
+		<div id="session-votes-stats">
+			<ul class='stats-list'>
+				{% if stats['votes']['positive'] + stats['votes']['negative'] > 0 %}
+					<li class="session-vote"><h3><span class="session-vote-label stats-label">Positive</span> <span id="session-vote-positive" class="session-vote-count stats-value">{{ stats['votes']['positive'] }}</span></h3></li>
+					<li class="session-vote"><h3><span class="session-vote-label stats-label">Negative</span> <span id="session-vote-negative" class="session-vote-count stats-value">{{ stats['votes']['negative'] }}</span></h3></li>
+				{% else %}
+					<li><span class="placeholder">No votes yet</span></li>
+				{% end %}
+			</ul>
+		</div>
 
 		<div id="session-graph">
+			<header class="styled-header"><h2>graph</h2></header>
 			<!-- Implement graph here -->
 			<img src="http://chart.apis.google.com/chart
 				   ?chxs=0,676767,40
 				   &chxt=x
-				   &chs=300x150
+				   &chs=400x250
 				   &cht=p
 				   &chco=5B9DC8
 				   &chd=t:{{ stats['votes']['positive'] }},{{ stats['votes']['negative'] }}
 				   &chp=0.628
-				   &chl=Yes|No" height="150" width="300">
+				   &chl=Yes|No" height="250" width="400">
 		</div>
+	</div>
+	
+	<div id="session-votes-summary">
+		<h2><span class="session-vote-label">Total votes</span> - <span id="session-votes-total">{{ stats['votes']['positive'] + stats['votes']['negative'] }}</span></h2>
+		<h2><span class="session-vote-label">Total mentions</span> - <span id="session-tweet-count">{{ stats['tweet_count'] }}</span></h2>
 	</div>
 
 	<div id="session-recent">
-		<h2>Recent comments on #{{ session }}</h2>
+		<header class="styled-header"><h2>recent tweets<br>&nbsp;&nbsp;on #{{ session }}</h2></header>
 		<ul id="recent-tweets">
 			{% if stats['recent_tweets'] %}
 				{% for tweet in stats['recent_tweets'] %}
-					<li class="tweet">
-						<a class="tweet-image" href="http://twitter.com/{{ tweet['user']['screen_name'] }}/"><img src="{{ tweet['user']['profile_image_url'] }}" alt="@{{ tweet['user']['screen_name'] }}"></a>
-						<p class="tweet-text">{{ tweet['text'] }}</p>
-						<small class='tweet-permalink' target='_blank'><a href='http://twitter.com/{{ tweet['user']['screen_name'] }}/status/{{ tweet['id'] }}/'>permalink</a></small>;  
+					<li>
+						<div class="tweet">
+							<a class="tweet-image" href="http://twitter.com/{{ tweet['user']['screen_name'] }}/"><img src="{{ tweet['user']['profile_image_url'] }}" alt="@{{ tweet['user']['screen_name'] }}"></a>
+							<p class="tweet-text">{{ tweet['text'] }}</p>
+						</div>
+						<small class='tweet-permalink' target='_blank'><a href='http://twitter.com/{{ tweet['user']['screen_name'] }}/status/{{ tweet['id'] }}/'>permalink</a></small>
 					</li>
 				{% end %}
 			{% else %}
