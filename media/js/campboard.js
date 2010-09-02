@@ -50,8 +50,8 @@ CampBoard.parse_message = function(d) {
 				var html = "<li><div class='tweet'>"
 				html += "<a class='tweet-image' href='http://twitter.com/" + rts[i]['user']['screen_name'] + "'><img src='" + rts[i]['user']['profile_image_url'] + "'></a>";
 				html +=	"<p class='tweet-text'>" + rts[i]['text'] + "</p>";
-				html += "<small class='tweet-permalink' target='_blank'><a href='http://twitter.com/" + rts[i]['user']['screen_name'] + "/status/" + rts[i]['id'] + "/'>permalink</a>"; 
-				html += "</div>";
+				html += "<small class='tweet-permalink' target='_blank'><a href='http://twitter.com/" + rts[i]['user']['screen_name'] + "/status/" + rts[i]['id'] + "/'>permalink</a></small>"; 
+				html += "</div></li>";
 				
 				if($('#recent-tweets > .placeholder:first-child').length == 1) {
 					$(html).insertBefore($('#recent-tweets > .placeholder:first-child'));
