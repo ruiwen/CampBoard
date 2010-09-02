@@ -21,26 +21,29 @@
 {% end %}
 
 {% block main %}
-	<h1>Admin</h1>
 	<div id="admin-stats">
-		<ul id="admin-stats-list">
-			<li class="admin-stats">Total tweeters: <span id="total-tweets">0</span></li>
-			<li class="admin-stats">Unique tweeters: <span id="unique-tweeters">0</span></li>
-			<li class="admin-stats">Total sessions: <span id="total-sessions">0</span></li>
+		<h1>Admin</h1>
+		<ul id="admin-stats-list" class="stats-list">
+			<li><h2><span class="admin-stats stats-label">Total tweeters</span></h2> <span id="total-tweets" class="stats-value">0</span></li>
+			<li><h2><span  class="admin-stats stats-label">Unique tweeters</span></h2> <span id="unique-tweeters" class="stats-value">0</span></li>
+			<li><h2><span  class="admin-stats stats-label">Total sessions</span></h2> <span id="total-sessions" class="stats-value">0</span></li>
 		</ul>
 	</div>
 	
 	<div id="admin-sessions">
 		<h1>Sessions</h1>
-		<ul id="session-stats-list">
+		<ul id="session-stats-list" class="stats-list">
 			<li class="placeholder">None yet.</li>
 		</ul>
 	</div>
 	
 	<div id="admin-controls">
-		<li><input type="text" placeholder="Add session?" id="session-add"><input type='submit' value="Add session" onclick="CampBoard.Admin.SessionAdd($('#session-add').val())"></li>
-		<li><input type="text" placeholder="Remove session?" id="session-remove"><input type='submit' value='Remove session' onclick="CampBoard.Admin.SessionRemove($('#session-remove').val())"></li>
-		<li><input type="text" placeholder="Broadcast message" id="message-broadcast"><input type='submit' value='Broadcast message' onclick="CampBoard.Admin.MessageBroadcast($('#message-broadcast').val())"></li>
+		<h1>Controls</h1>
+		<ul>
+			<li><input type="text" placeholder="Add session?" id="session-add"><input type='submit' value="+" onclick="CampBoard.Admin.SessionAdd($('#session-add').val())"></li>
+			<li><input type="text" placeholder="Remove session?" id="session-remove"><input type='submit' value='-' onclick="CampBoard.Admin.SessionRemove($('#session-remove').val())"></li>
+			<li><input type="text" placeholder="Broadcast message" id="message-broadcast"><input type='submit' value='!' onclick="CampBoard.Admin.MessageBroadcast($('#message-broadcast').val())"></li>
+		</ul>
 	</div>
 
 {% end %}
