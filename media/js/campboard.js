@@ -39,7 +39,7 @@ CampBoard.parse_message = function(d) {
 			$('#unique-tweeters').html(data['unique_tweeters'])
 		}
 
-		if(data['sessions_number']) {
+		if(data['sessions_number'] >= 0) {
 			$('#total-sessions').html(data['sessions_number'])
 		}
 
@@ -84,6 +84,11 @@ CampBoard.parse_message = function(d) {
 					else {
 						if(sess[i] == 'DEL') {
 							$('#session-' + i).remove()
+							
+							// Re-insert the placeholder if there are no more sessions left
+							if($('#session-stats-list > .session').length ==0){
+								$('#session-stats-list').append($('<li class="placeholder">None yet.</li>'));
+							}
 						}
 						else {
 							$('#session-' + i).eq(0).html(sess_format); // Otherwise we just substitute the contents of the appropriate <li>
@@ -112,7 +117,8 @@ CampBoard.parse_message = function(d) {
 		}
 	}
 	catch(e) {
-		alert(e)
+		console.log(e)
+		//alert(e)
 		//alert("Uhoh");
 	}
 }
