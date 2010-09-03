@@ -22,15 +22,19 @@
 		<div id="session-graph">
 			<header class="styled-header"><h2>graph</h2></header>
 			<!-- Implement graph here -->
-			<img src="http://chart.apis.google.com/chart
-				   ?chxs=0,676767,40
-				   &chxt=x
-				   &chs=400x250
-				   &cht=p
-				   &chco=5B9DC8
-				   &chd=t:{{ stats['votes']['positive'] }},{{ stats['votes']['negative'] }}
-				   &chp=0.628
-				   &chl=Yes|No" height="250" width="400">
+			{% if stats['votes']['positive'] == 0 and stats['votes']['negative'] == 0 %}
+				<p class="placeholder" style="font-size: 80px;">no votes yet</p>			
+			{% else %}
+				<img src="http://chart.apis.google.com/chart
+					   ?chxs=0,676767,40
+					   &chxt=x
+					   &chs=400x250
+					   &cht=p
+					   &chco=5B9DC8
+					   &chd=t:{{ stats['votes']['positive'] or 0 }},{{ stats['votes']['negative'] or 0 }}
+					   &chp=0.628
+					   &chl=Yes|No" height="250" width="400">
+			{% end %}
 		</div>
 	</div>
 	
