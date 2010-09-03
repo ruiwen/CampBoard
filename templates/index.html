@@ -8,15 +8,26 @@
 			<div id="tweet-stats">
 				<header class="stats-header styled-header"><h2>tweets</h2></header>
 				<ul class="stats-list">
-					<li><h2><span class="stats-label">Total tweets</span>  <span class="stats-value" id="total-tweets">0</span></h2></li>
-					<li><h2><span class="stats-label">Unique users</span>  <span class="stats-value" id="unique-tweeters">0</span></h2></li>
+					<li><h2><span class="stats-label">Total tweets</span>  <span class="stats-value" id="total-tweets">{{ stats['total_tweets'] }}</span></h2></li>
+					<li><h2><span class="stats-label">Unique users</span>  <span class="stats-value" id="unique-tweeters">{{ stats['unique_tweeters'] }}</span></h2></li>
 				</ul>
 			</div>
 			
 			<div id="session-stats">
 				<header class="stats-header styled-header"><h2>sessions</h2></header>
 				<ul class="stats-list" id="session-stats-list">
-					<li class="placeholder"><h2>None yet</h2></li>
+					{% if stats['sessions'] %}
+						{% for sess in stats['sessions'] %}
+							<li id="session-{{ sess }}" class="session">
+								<h2>
+									<span class='stats-label session-title'><a href="/session/{{ sess }}/">#{{ sess }}</a></span>
+									<span class='session-count stats-value'>+{{ stats['sessions'][sess] }}</span>
+								</h2>
+							</li>
+						{% end %}
+					{% else %}
+						<li class="placeholder"><h2>None yet</h2></li>
+					{% end %}
 				</ul>
 			</div>	
 		</div>
@@ -24,7 +35,19 @@
 		<div id="main-recent">
 			<header class="styled-header"><h2>recent<br>&nbsp;&nbsp;tweets</h2></header>
 			<ul id="recent-tweets">
-				<li class="placeholder"><h2>None yet</h2></li>
+				{% if stats['recent_tweets'] %}
+					{% for tweet in stats['recent_tweets'] %}
+						<li>
+							<div class="tweet">
+								<a class="tweet-image" href="http://twitter.com/{{ tweet['user']['screen_name'] }}/"><img src="{{ tweet['user']['profile_image_url'] }}" alt="@{{ tweet['user']['screen_name'] }}"></a>
+								<p class="tweet-text">{{ tweet['text'] }}</p>
+							</div>
+							<small class='tweet-permalink' target='_blank'><a href='http://twitter.com/{{ tweet['user']['screen_name'] }}/status/{{ tweet['id'] }}/'>permalink</a></small>
+						</li>
+					{% end %}
+				{% else %}
+					<li class="placeholder"><h2>None yet.</h2></li>
+				{% end %}
 			</ul>
 		</div>	
 		

@@ -78,7 +78,9 @@ class MainHandler(BaseHandler):
 	def get(self):
 		print "Main"
 		# Craft a broadcast object on first load to seed the page with relevant data
-		self.render("index.html")
+		stats = Updater.general_update()
+		stats['recent_tweets'] = Updater.recent_tweets()
+		self.render("index.html", stats=stats)
 
 
 class SessionHandler(BaseHandler):
