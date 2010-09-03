@@ -113,7 +113,7 @@ header h1 {
 	
 	/** Actual styling **/
 	-webkit-transform-origin: center center;
-	-moz-transform: rotate(-90deg);
+	-moz-transform: rotate(30deg);
 	-webkit-transform: rotate(30deg);
 	color: #dd3322;
 	display: inline-block;
