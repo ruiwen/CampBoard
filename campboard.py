@@ -25,7 +25,7 @@ campboard = {
 	'ws_channels': {},
 	#'incoming': [],
 	#'incoming_ws_clients': Queue.Queue(),
-	'sessions': ['nodejs', 'distdb']
+	'sessions': []
 }
 
 from tornado.options import define, options
@@ -63,6 +63,11 @@ class Application(tornado.web.Application):
 	
 	    # Have one global connection to the blog DB across all handlers
 		self.db = campboard['db']
+		
+		# Setup sessions from the database
+		campboard['sessions'] = [row['name'] for row in self.db.query('''SELECT name FROM sessions''')]
+		print campboard['sessions']
+		
 
 class BaseHandler(tornado.web.RequestHandler):
     @property
@@ -466,7 +471,7 @@ class Updater(object):
 	def session_add(self, sess):
 		campboard['sessions'].append(sess)
 		print unicode(campboard['sessions'])
-		
+		self.db.execute('''INSERT INTO sessions (name) VALUES (%s) ON DUPLICATE KEY UPDATE name=%s''' , sess, sess)
 		self.ws_broadcast(self.general_update())
 
 	
@@ -476,6 +481,8 @@ class Updater(object):
 		print unicode(campboard['sessions'])
 		gen = self.general_update()		
 		gen['sessions'][sess] = "DEL" # Set DEL to indicate removal
+		gen['sessions_number'] = len(campboard['sessions'])		
+		self.db.execute('''DELETE FROM sessions WHERE name=%s''' , sess)		
 		self.ws_broadcast(gen)
 		
 	
