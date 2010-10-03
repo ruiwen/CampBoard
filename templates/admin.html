@@ -6,7 +6,7 @@
 
 		CampBoard.Admin.SessionAdd = function() {
 			// Grab session
-			var sess = $('#session-add').val();
+			var sess = CampBoard.slugify($('#session-add').val());
 		
 			CampBoard.send_message('session_add', null, sess);
 			$('#session-add').val('');
@@ -14,7 +14,7 @@
 		
 		CampBoard.Admin.SessionRemove = function() {
 			// Grab session 
-			var sess = $('#session-remove').val();
+			var sess = CampBoard.slugify($('#session-remove').val());
 		
 			CampBoard.send_message('session_remove', null, sess);
 			$('#session-remove').val('');
