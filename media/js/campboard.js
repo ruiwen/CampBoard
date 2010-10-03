@@ -136,6 +136,18 @@ CampBoard.send_message = function(method, channel, data) {
 	
 }
 
+/**
+ * Tweaked from: http://www.milesj.me/resources/snippet/13
+ * Transform text into a URL slug: spaces turned into dashes, remove non alnum
+ * @param string text
+ */
+CampBoard.slugify = function(text) {
+	text = text.replace(/[^-a-zA-Z0-9,&\s]+/ig, '');
+	text = text.replace(/-/gi, "_");
+	text = text.replace(/\s/gi, "-");
+	return text.toLowerCase();
+}
+
 if(jQuery) {
 	$(window).load(function() {
 		CampBoard.ws_init();
