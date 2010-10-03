@@ -4,18 +4,32 @@
 	<script>
 		CampBoard.Admin = CampBoard.Admin || {};
 
-		CampBoard.Admin.SessionAdd = function(sess) {
+		CampBoard.Admin.SessionAdd = function() {
+			// Grab session
+			var sess = $('#session-add').val();
+		
 			CampBoard.send_message('session_add', null, sess);
 			$('#session-add').val('');
 		}
 		
-		CampBoard.Admin.SessionRemove = function(sess) {
+		CampBoard.Admin.SessionRemove = function() {
+			// Grab session 
+			var sess = $('#session-remove').val();
+		
 			CampBoard.send_message('session_remove', null, sess);
-			$('#session-remove').val('')
+			$('#session-remove').val('');
 		}
 		
-		CampBoard.Admin.MessageBroadcast = function(msg) {
-			CampBoard.send_message('broadcast_message', null, msg);
+		CampBoard.Admin.MessageBroadcast = function() {
+			// Grab the selected channel
+			var channel = $('#admin-broadcast-channel option:selected').val();
+		
+			// What's the message
+			var msg = $('#message-broadcast').val();
+					
+			CampBoard.send_message('broadcast_message', channel, msg);
+			
+			$('#message-broadcast').val('');
 		}
 	</script>
 {% end %}
@@ -40,9 +54,20 @@
 	<div id="admin-controls">
 		<h1>Controls</h1>
 		<ul>
-			<li><input type="text" placeholder="Add session?" id="session-add"><input type='submit' value="+" onclick="CampBoard.Admin.SessionAdd($('#session-add').val())"></li>
-			<li><input type="text" placeholder="Remove session?" id="session-remove"><input type='submit' value='-' onclick="CampBoard.Admin.SessionRemove($('#session-remove').val())"></li>
-			<li><input type="text" placeholder="Broadcast message" id="message-broadcast"><input type='submit' value='!' onclick="CampBoard.Admin.MessageBroadcast($('#message-broadcast').val())"></li>
+			<li><form onsubmit="CampBoard.Admin.SessionAdd(); return false;"><input type="text" placeholder="Add session?" id="session-add"><input type='submit' value="+"></li></form>
+			<li><form onsubmit="CampBoard.Admin.SessionRemove(); return false;"><input type="text" placeholder="Remove session?" id="session-remove"><input type='submit' value='-'></li></form>
+			<li>
+				<form onsubmit="CampBoard.Admin.MessageBroadcast(); return false;">
+				<input type="text" placeholder="Broadcast message" id="message-broadcast"><input type='submit' value='!'>
+				<br>
+				<select id="admin-broadcast-channel">
+					<option value="all">All</option>
+					{% for sess in sessions %}
+					<option value="{{ sess }}">{{ sess }}</option>
+					{% end %}
+				</select>
+				</form>
+			</li>
 		</ul>
 	</div>
 

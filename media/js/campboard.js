@@ -112,8 +112,8 @@ CampBoard.parse_message = function(d) {
 	
 	
 		if(data['broadcast_message']) {
-			$('#broadcast').html(data['broadcast_message']);
-			$('#broadcast').show()
+			var channel = data['channel'] || null;		
+			$.jGrowl(data['broadcast_message'], {header: (channel)?"#" + channel+" Notice":"BarCampSG6 Notice" });
 		}
 	}
 	catch(e) {

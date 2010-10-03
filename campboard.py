@@ -128,7 +128,7 @@ class AdminHandler(BaseHandler):
 	def get(self):
 		user = self.get_secure_cookie('user')
 		if user and user == 'campmin':			
-			self.render("admin.html")
+			self.render("admin.html", sessions=campboard['sessions'])
 		else:
 			self.render("admin-unauth.html")
 		
@@ -168,11 +168,9 @@ class CampboardSocket(tornado.websocket.WebSocketHandler):
 				
 			
 			if msg['method'] == 'broadcast_message':
-				if msg['channel']:
-					Updater.ws_broadcast_channel(msg['channel'], msg['data'])
-				
-				else:
-					Updater.ws.broadcast(msg['msg'])
+				channel = msg.get('channel', None)			
+				Updater.broadcast_message(msg['data'], channel)
+
 					
 		except Exception as e:
 			print "Message parse failed: %s" % (unicode(e))
@@ -190,6 +188,9 @@ class CampboardSocket(tornado.websocket.WebSocketHandler):
 				
 				campboard['ws_channels'][channel].append(self)
 				#campboard['ws_clients'].remove(self) # Prevent duplication of broadcasts
+				
+				campboard['ws_clients'].append(self) # Add to the general list too, so that mass broadcasts reach everyone
+				
 			else:
 				print "No match, adding to normal client list"
 				if self not in campboard['ws_clients']:
@@ -485,6 +486,16 @@ class Updater(object):
 		self.db.execute('''DELETE FROM sessions WHERE name=%s''' , sess)		
 		self.ws_broadcast(gen)
 		
+	
+	@classmethod
+	def broadcast_message(self, message, channel=None):
+		'''Broadcasts a message to either all clients, or clients on a specific channel'''
+		print "Broadcast message"
+		if channel is None or channel == 'all':
+			self.ws_broadcast({"broadcast_message": message})
+		else:
+			self.ws_broadcast_channel(channel, {"broadcast_message": message, "channel": channel})
+	
 	
 	@classmethod
 	def ws_broadcast_channel(self, channel, data):
