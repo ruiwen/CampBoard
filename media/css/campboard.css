@@ -49,6 +49,16 @@ body {
 	font-family: "Helvetica", "Arial", sans-serif;
 }
 
+/* www.aestheticallyloyal.com/public/optimize-legibility/ */ 
+h1,h2,h3,h4,h5,h6 { font-weight: bold; text-rendering: optimizeLegibility; }
+
+/* maxvoltar.com/archive/-webkit-font-smoothing */
+html { -webkit-font-smoothing: antialiased; }
+
+/* hand cursor on clickable input elements */
+label, input[type=button], input[type=submit], button { cursor: pointer; }
+
+
 h1 {
 	font-size: 40px;
 }
@@ -357,3 +367,28 @@ footer {
 	-moz-transform: scale(2.0);
 	-webkit-transform: scale(2.0);
 }
+
+
+/** Additional styling for mobile **/
+/*
+ * Media queries for responsive design
+ */
+
+@media all and (orientation:portrait) { 
+  /* Style adjustments for portrait mode goes here */
+}
+
+@media all and (orientation:landscape) { 
+  /* Style adjustments for landscape mode goes here */
+  
+}
+
+/* Grade-A Mobile Browsers (Opera Mobile, iPhone Safari, Android Chrome)  
+   Consider this: www.cloudfour.com/css-media-query-for-mobile-is-fools-gold/ */
+@media screen and (max-device-width: 320px) {
+
+  
+	/* Prevent iOS, WinMobile from adjusting font size */
+	html { -webkit-text-size-adjust:none; -ms-text-size-adjust:none; } 
+}
+
