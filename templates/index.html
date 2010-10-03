@@ -39,7 +39,7 @@
 					{% for tweet in stats['recent_tweets'] %}
 						<li>
 							<div class="tweet">
-								<a class="tweet-image" href="http://twitter.com/{{ tweet['user']['screen_name'] }}/"><img src="{{ tweet['user']['profile_image_url'] }}" alt="@{{ tweet['user']['screen_name'] }}"></a>
+								<a class="tweet-image" href="http://twitter.com/{{ tweet['user']['screen_name'] }}/"><img height="48px" width="48px" src="{{ tweet['user']['profile_image_url'] }}" alt="@{{ tweet['user']['screen_name'] }}" title="@{{ tweet['user']['screen_name']}}"></a>
 								<p class="tweet-text">{{ tweet['text'] }}</p>
 							</div>
 							<small class='tweet-permalink' target='_blank'><a href='http://twitter.com/{{ tweet['user']['screen_name'] }}/status/{{ tweet['id'] }}/'>permalink</a></small>

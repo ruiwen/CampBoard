@@ -48,7 +48,7 @@ CampBoard.parse_message = function(d) {
 			rts = data['recent_tweets']
 			for(var i=0; i<rts.length; ++i) {
 				var html = "<li><div class='tweet'>"
-				html += "<a class='tweet-image' href='http://twitter.com/" + rts[i]['user']['screen_name'] + "'><img src='" + rts[i]['user']['profile_image_url'] + "'></a>";
+				html += "<a class='tweet-image' href='http://twitter.com/" + rts[i]['user']['screen_name'] + "'><img height='48px' width='48px' src='" + rts[i]['user']['profile_image_url'] + "' alt='@" + rts[i]['user']['screen_name'] + "' title='@" + rts[i]['user']['screen_name'] + "'></a>";
 				html +=	"<p class='tweet-text'>" + rts[i]['text'] + "</p></div>";
 				html += "<small class='tweet-permalink' target='_blank'><a href='http://twitter.com/" + rts[i]['user']['screen_name'] + "/status/" + rts[i]['id'] + "/'>permalink</a></small>"; 
 				html += "</li>";

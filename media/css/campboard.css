@@ -175,6 +175,8 @@ header h1 {
 .tweet-image {
 	display: inline-block;
 	float: left;
+	height: 48px;
+	width: 48px;
 }
 
 .tweet-text {
