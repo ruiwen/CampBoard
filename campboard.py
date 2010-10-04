@@ -357,14 +357,9 @@ class Updater(object):
 		broadcast['sessions'] = {}
 		
 		for session in campboard['sessions']:
-			#broadcast['sessions'][session] = Updater.sessions_stats(session, 'positive').get('session_positive', 0)
-			
-			# TODO: REMOVE RANDOM CALL BEFORE PRODUCTION!
-			broadcast['sessions'][session] = self.session_votes(session).get('cumulative', random.randint(0,99)) # For FAKE's SAKE!
+			broadcast['sessions'][session] = self.session_votes(session).get('cumulative', 0)
 				
-
 		broadcast['sessions_number'] = len(campboard['sessions'])
-			
 		return broadcast
 
 
