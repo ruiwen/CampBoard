@@ -365,18 +365,17 @@ class Updater(object):
 
 
 	@classmethod
-	def recent_tweets(self, channel=None, limit=None):
+	def recent_tweets(self, channel=None, since=0, limit=10):
 		
-		limit = limit or 10
-
 		rt = []
 		if channel is None:
-			rt = self.db.query("SELECT SQL_CALC_FOUND_ROWS * FROM tweets ORDER BY created_at DESC LIMIT %s", limit)
+			rt = self.db.query("SELECT SQL_CALC_FOUND_ROWS * FROM tweets WHERE id > %s ORDER BY created_at DESC LIMIT %s", since, limit)
 		else:
+			channel = channel.lower()
 			rt = self.db.query('''SELECT SQL_CALC_FOUND_ROWS * FROM tweets WHERE id IN (
 					SELECT tweet_id FROM hashtags_tweets WHERE hash_id IN 
 						(SELECT id FROM hashtags WHERE tag=%s)
-					) ORDER BY created_at DESC LIMIT %s''', channel, 10)
+					)  AND id > %s ORDER BY created_at DESC LIMIT %s''', channel, since, limit)
 	
 		recent_tweets = [
 			{
