@@ -282,13 +282,14 @@ class Updater(object):
 		broadcast['channels'] = {}
 				
 		for s in statuses:
-			tags = re.findall("#([\w]+)?iu", s.text) # Case-insensitive, Unicode matching
+			tags = re.findall("#([\w]+)(?iu)", s.text) # Case-insensitive, Unicode matching
 			print "Tags: "
 			print tags
 			self.db.execute("INSERT INTO tweets (id, user_id, screen_name, profile_image_url, created_at, text) VALUES (%s,%s,%s,%s,%s,%s)", s.id, s.user.id, s.user.screen_name, s.user.profile_image_url, s.created_at, s.text)
 
 			# Establish HABTM relationships, tweets with tags
 			for t in tags:
+				t = t.lower() # Force all to lowercase
 				print "Inserting tag: %s" % t
 				self.db.execute('''INSERT INTO hashtags (tag) VALUES (%s) ON DUPLICATE KEY UPDATE id=LAST_INSERT_ID(id), tag=%s; 
 					INSERT INTO hashtags_tweets (hash_id, tweet_id) VALUES (LAST_INSERT_ID(), %s)''', t, t, s.id)
