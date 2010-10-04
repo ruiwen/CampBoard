@@ -98,9 +98,36 @@ class SessionHandler(BaseHandler):
 
 class PollHandler(BaseHandler):
 	def get(self):
-		print "GET: %s" % self.request.body
-		#print unicode(self.request.headers['Referer'])
-		self.write({"a":1})
+		
+		session_match = re.search('/session/(?P<session>\w+)', self.request.headers['Referer'])
+				
+		if session_match:
+			channel = session_match.group('session')
+			channel_poll = Updater.session_stats(channel, 'stats')
+			
+			last_tweet_id = self.get_cookie('last_tweet_id')
+			rt = Updater.recent_tweets(channel, last_tweet_id)			
+			if rt:
+				# Set cookie for last tweet id
+				self.set_cookie('last_tweet_id', unicode(rt[0]['id']))
+				rt.reverse()
+				channel_poll.update({'recent_tweets': rt})
+			
+			self.write(channel_poll)
+			
+		else:
+			general_poll = {}
+			general_poll.update(Updater.general_update()) # This line is ridiculous
+
+			last_tweet_id = self.get_cookie('last_tweet_id')
+			rt = Updater.recent_tweets(None, last_tweet_id)
+			if rt:			
+				# Set cookie for last tweet id
+				self.set_cookie('last_tweet_id', unicode(rt[0]['id']))
+				rt.reverse()
+				general_poll.update({"recent_tweets": rt}) # Reverse the tweet list, since we add from the top in JS
+			
+			self.write(general_poll)
 		
 		
 	def post(self):
@@ -120,8 +147,7 @@ class PollHandler(BaseHandler):
 				
 				self.write(tornado.escape.json_encode(broadcast))
 		else:
-			self.write({"a":3})
-
+			self.write({})
 
 
 class AdminHandler(BaseHandler):
