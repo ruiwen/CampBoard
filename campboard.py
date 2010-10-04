@@ -251,15 +251,21 @@ class Updater(object):
 		self.incoming.append(data)
 		#self._process_data()
 		rts = self.update_tweets()
-		self.ws_broadcast(rts['general'])
-		self.ws_broadcast(self.general_update())
+
+		general_broadcast = {}
+		general_broadcast.update(rts['general']) # recent_tweets array
+		general_broadcast.update(self.general_update())
+		self.ws_broadcast(general_broadcast)
 		
 		# Session update
 		for s in campboard['sessions']:
-			self.ws_broadcast_channel(s, self.session_stats(s, 'stats'))
+			channel_broadcast = {}
+			channel_broadcast.update(self.session_stats(s, 'stats'))
 			if rts['channels'].has_key(s):
-				self.ws_broadcast_channel(s, rts['channels'][s])
-	
+				channel_broadcast.update(rts['channels'][s])
+
+			self.ws_broadcast_channel(s, channel_broadcast)
+
 	
 	@classmethod
 	def update_tweets(self):
