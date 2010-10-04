@@ -186,16 +186,15 @@ class CampboardSocket(tornado.websocket.WebSocketHandler):
 				if not campboard['ws_channels'].has_key(channel):
 					campboard['ws_channels'][channel] = []
 				
-				campboard['ws_channels'][channel].append(self)
-				#campboard['ws_clients'].remove(self) # Prevent duplication of broadcasts
+				if self not in campboard['ws_channels'][channel]:
+					campboard['ws_channels'][channel].append(self)
 				
-				campboard['ws_clients'].append(self) # Add to the general list too, so that mass broadcasts reach everyone
-				
-			else:
-				print "No match, adding to normal client list"
-				if self not in campboard['ws_clients']:
-					print "Adding to client list"
-					campboard['ws_clients'].append(self)
+
+			print "Adding to normal client list"
+			# We add all clients to the general list anyway so that everyone gets broadcasts
+			if self not in campboard['ws_clients']:
+				print "Adding to client list"
+				campboard['ws_clients'].append(self)
 			
 					
 				self.write_message(Updater.general_update())
