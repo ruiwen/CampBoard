@@ -2,6 +2,10 @@ var CampBoard = CampBoard || {}
 
 CampBoard.ws_init = function(){
 
+	this.KEEP_ALIVE_INTERVAL = 30000;
+		
+	this.keepAliveReply = 0;
+
 	this.__ws_init = function() {
 		this.ws = $.gracefulWebSocket("ws://ubuntuvm:8888/campsocket/", {fallbackSendURL: "http://ubuntuvm:8080/poll/", fallbackPollURL: "http://ubuntuvm:8080/poll/", fallbackPollInterval: 5000})
 		//new WebSocket("ws://ubuntuvm:8888/campsocket/");
@@ -25,6 +29,19 @@ CampBoard.ws_init = function(){
 	}
 	this.__ws_init();
 
+	// Set up keep-alive ping
+	this.keepAlive = setInterval(function() {
+		console.log("keepAlive");
+		
+		if(!CampBoard.ws.send("p")) {
+			console.log("Restarting WebSocket");
+			CampBoard.__ws_init();
+		}
+		else {
+			CampBoard.keepAliveReply = (new Date()).getTime(); // Record time of last successful send
+		}
+
+	}, CampBoard.KEEP_ALIVE_INTERVAL); // Ping each KEEP_ALIVE_INTERVAL sessions
 	
 }
 
