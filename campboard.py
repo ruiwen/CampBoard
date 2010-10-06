@@ -20,7 +20,7 @@ from tweepy.models import Status
 
 campboard = {
 	'db': None,
-	'event_tag': '#bcampsg6',
+	'event_tag': 'campboardtest',
 	'ws_clients': [],
 	'ws_channels': {},
 	#'incoming': [],
@@ -555,7 +555,7 @@ campboard['application'] = Application()
 
 if __name__ == "__main__":
 	
-	threading.Thread(target=Updater.start_updating, name="update_thread", args=('partyblankone', 'partyon', ['108958644'], ['campboardtest'])).start()
+	threading.Thread(target=Updater.start_updating, name="update_thread", args=('partyblankone', 'partyon', ['108958644'], [campboard['event_tag']])).start()
 	print "Starting server"
 	http_server = tornado.httpserver.HTTPServer(campboard['application'])
 	http_server.listen(options.port)
