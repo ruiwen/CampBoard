@@ -460,7 +460,7 @@ class Updater(object):
 			votes['negative'] = res[0].negative or 0
 			votes['cumulative'] = votes['positive'] - votes['negative']
 		else:
-			votes['positive'] = votes['negative'] = 0
+			votes['positive'] = votes['negative'] = votes['cumulative'] = 0
 
 		return votes
 		
