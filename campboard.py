@@ -353,13 +353,11 @@ class Updater(object):
 			
 					vote_type = None
 					if re.search('\+1', s.text):
-						vote_type = "positive"
+						#vote_type = "positive"
+						self.db.execute("INSERT INTO session_votes (`session`, positive) VALUES (%s, 1) ON DUPLICATE KEY UPDATE positive=positive+1", t)
 					elif re.search('\-1', s.text):
-						vote_type = "negative"
-					
-					if vote_type:
-						self.db.execute('INSERT INTO session_votes (session, votes) VALUES (%s, 1) ON DUPLICATE KEY UPDATE votes = votes+1', "%s_%s" % (t, vote_type))
-				
+						#vote_type = "negative"
+						self.db.execute("INSERT INTO session_votes (`session`, negative) VALUES (%s, 1) ON DUPLICATE KEY UPDATE negative=negative+1", t)
 		
 
 		broadcast['general']['recent_tweets'] = [
@@ -451,7 +449,7 @@ class Updater(object):
 # 			else:
 # 				votes['negative'] = 0
 
-		res = self.db.query("SELECT (SELECT votes FROM session_votes WHERE session = %s) AS positive, (SELECT votes FROM session_votes WHERE session = %s) AS negative", "%s_positive" % session, "%s_negative" % session)
+		res = self.db.query("SELECT positive, negative FROM session_votes WHERE session = %s", session)
 
 		if res:
 			votes['positive'] = res[0].positive or 0
