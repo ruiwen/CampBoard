@@ -390,12 +390,16 @@ class Updater(object):
 		broadcast['total_tweets'] = res.total_tweets #random.randint(0,1000) # FAKE
 		broadcast['unique_tweeters'] = res.unique_tweeters #random.randint(0,1000) # FAKE
 		
-		# Session faking
-		broadcast['sessions'] = {}
+		broadcast['sessions'] = []
 		
 		for session in campboard['sessions']:
-			broadcast['sessions'][session] = self.session_votes(session).get('cumulative', 0)
-				
+			broadcast['sessions'].append([session, self.session_votes(session).get('cumulative', 0)])
+		
+		# Sorts the sessions list according to votes
+		# http://wiki.python.org/moin/HowTo/Sorting/#KeyFunctions
+		broadcast['sessions'] = sorted(broadcast['sessions'], key=lambda session: session[1], reverse=True)
+
+		
 		broadcast['sessions_number'] = len(campboard['sessions'])
 		return broadcast
 
@@ -510,8 +514,9 @@ class Updater(object):
 	def session_remove(self, sess):
 		campboard['sessions'].remove(sess)
 		print unicode(campboard['sessions'])
-		gen = self.general_update()		
-		gen['sessions'][sess] = "DEL" # Set DEL to indicate removal
+		gen = self.general_update()
+		gen['sessions'] = []
+		gen['sessions'].append([sess, "DEL"]) # Set DEL to indicate removal
 		gen['sessions_number'] = len(campboard['sessions'])		
 		self.db.execute('''DELETE FROM sessions WHERE name=%s''' , sess)		
 		self.ws_broadcast_channel('main', gen)

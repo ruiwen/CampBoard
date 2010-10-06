@@ -88,9 +88,11 @@ CampBoard.parse_message = function(d) {
 			var sess = data['sessions'];
 			if(sess instanceof Object) {
 				for(var i in sess) {
-					var sess_format = "<h2><span class='stats-label session-title'><a href='/session/" + i + "/'>#" + i + "</a></span>  <span class='session-count stats-value'>+" + sess[i] + "</span></h2>";
-					if($('#session-' + i).length == 0) { // Listing for session does not exist yet
-						var html = "<li class='session' id='session-" + i + "'>"; // So we have to create our own <li>
+					// sess[i][0] is the session name
+					// sess[i][1] is the cumulative vote count, or the 'DEL' instruction
+					var sess_format = "<h2><span class='stats-label session-title'><a href='/session/" + sess[i][0] + "/'>#" + sess[i][0] + "</a></span>  <span class='session-count stats-value'>+" + sess[i][1] + "</span></h2>";
+					if($('#session-' + sess[i][0]).length == 0) { // Listing for session does not exist yet
+						var html = "<li class='session' id='session-" + sess[i][0] + "'>"; // So we have to create our own <li>
 						html += sess_format;
 						html += "</li>";
 						
@@ -103,8 +105,9 @@ CampBoard.parse_message = function(d) {
 						}
 					}
 					else {
-						if(sess[i] == 'DEL') {
-							$('#session-' + i).remove()
+						if(sess[i][1] == 'DEL') {
+							$('#session-' + sess[i][0]).remove()
+							
 							
 							// Re-insert the placeholder if there are no more sessions left
 							if($('#session-stats-list > .session').length ==0){
@@ -112,7 +115,7 @@ CampBoard.parse_message = function(d) {
 							}
 						}
 						else {
-							$('#session-' + i).eq(0).html(sess_format); // Otherwise we just substitute the contents of the appropriate <li>
+							$('#session-' + sess[i][0]).eq(0).html(sess_format); // Otherwise we just substitute the contents of the appropriate <li>
 						}
 					}
 				}

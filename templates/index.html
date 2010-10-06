@@ -18,10 +18,10 @@
 				<ul class="stats-list" id="session-stats-list">
 					{% if stats['sessions'] %}
 						{% for sess in stats['sessions'] %}
-							<li id="session-{{ sess }}" class="session">
-								<h2>
-									<span class='stats-label session-title'><a href="/session/{{ sess }}/">#{{ sess }}</a></span>
-									<span class='session-count stats-value'>+{{ stats['sessions'][sess] }}</span>
+							<li id="session-{{ sess[0] }}" class="session">
+								<h2 class="clearfix">
+									<span class='stats-label session-title'><a href="/session/{{ sess[0] }}/">#{{ sess[0] }}</a></span>
+									<span class='session-count stats-value'>+{{ sess[1] }}</span>
 								</h2>
 							</li>
 						{% end %}
