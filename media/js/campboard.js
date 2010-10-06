@@ -103,11 +103,22 @@ CampBoard.parse_message = function(d) {
 						else {
 							$(html).insertBefore($('#session-stats-list > li:first-child'));
 						}
+						
+						// If we're in the admin panel, add the session broadcast option
+						if(window.location.pathname == '/admin') {
+							if($("option[value=" + sess[i][0] + "]").length == 0){
+								$('#admin-broadcast-channel').append($("<option value='" + sess[i][0] + "'>" + sess[i][0] + "</option>"))
+							}
+						}
 					}
 					else {
 						if(sess[i][1] == 'DEL') {
 							$('#session-' + sess[i][0]).remove()
 							
+							// If we're in the admin panel, remember to remove the broadcast option
+							if(window.location.pathname == '/admin') {
+								$('option[value=' + sess[i][0] + ']').remove();
+							}
 							
 							// Re-insert the placeholder if there are no more sessions left
 							if($('#session-stats-list > .session').length ==0){
