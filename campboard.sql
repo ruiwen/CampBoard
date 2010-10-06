@@ -54,9 +54,25 @@ DROP TABLE IF EXISTS `session_votes`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `session_votes` (
   `session` varchar(140) NOT NULL,
-  `votes` int(11) NOT NULL,
+  `positive` int(11) NOT NULL DEFAULT '0',
+  `negative` int(11) NOT NULL DEFAULT '0',
   PRIMARY KEY (`session`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `sessions`
+--
+
+DROP TABLE IF EXISTS `sessions`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `sessions` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(140) NOT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name` (`name`)
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
