@@ -153,7 +153,9 @@ CampBoard.send_message = function(method, channel, data) {
 	// Fail with improper params
 	if(!method){ return false; }
 	
-	this.ws.send(JSON.stringify({'method':method, 'channel':channel, 'data':data}));
+	if(!this.ws.send(JSON.stringify({'method':method, 'channel':channel, 'data':data}))) {
+		$.jGrowl('Error in sending', {header: 'Error'});
+	}
 	
 }
 
