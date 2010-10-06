@@ -212,27 +212,27 @@ class CampboardSocket(tornado.websocket.WebSocketHandler):
 		if "Register: " in message:
 			print message
 			session_match = re.search('/session/(?P<session>\w+)', message)
+			
+			channel = 'main' # Default to the main page channel
 			if session_match:
 				channel = session_match.group('session')
-				print "Adding to channel: %s" % channel
-				if not campboard['ws_channels'].has_key(channel):
-					campboard['ws_channels'][channel] = []
-				
-				if self not in campboard['ws_channels'][channel]:
-					campboard['ws_channels'][channel].append(self)
+
+			print "Adding to channel: %s" % channel
+			if not campboard['ws_channels'].has_key(channel):
+				campboard['ws_channels'][channel] = []
+			
+			if self not in campboard['ws_channels'][channel]:
+				campboard['ws_channels'][channel].append(self)
 				
 
 			print "Adding to normal client list"
 			# We add all clients to the general list anyway so that everyone gets broadcasts
 			if self not in campboard['ws_clients']:
 				print "Adding to client list"
-				campboard['ws_clients'].append(self)
-			
-					
-				self.write_message(Updater.general_update())
-				rt = Updater.recent_tweets()
-				rt.reverse()
-				self.write_message({"recent_tweets": rt})
+				campboard['ws_clients'].append(self)			
+ 				gen_update = Updater.general_update()
+
+				self.write_message(gen_update)
 				
 		
 		if message == "Close":
@@ -287,7 +287,7 @@ class Updater(object):
 		general_broadcast = {}
 		general_broadcast.update(rts['general']) # recent_tweets array
 		general_broadcast.update(self.general_update())
-		self.ws_broadcast(general_broadcast)
+		self.ws_broadcast_channel('main', general_broadcast)
 		
 		# Session update
 		for s in campboard['sessions']:
@@ -505,7 +505,7 @@ class Updater(object):
 		campboard['sessions'].append(sess)
 		print unicode(campboard['sessions'])
 		self.db.execute('''INSERT INTO sessions (name) VALUES (%s) ON DUPLICATE KEY UPDATE name=%s''' , sess, sess)
-		self.ws_broadcast(self.general_update())
+		self.ws_broadcast_channel('main', self.general_update())
 
 	
 	@classmethod
@@ -516,7 +516,7 @@ class Updater(object):
 		gen['sessions'][sess] = "DEL" # Set DEL to indicate removal
 		gen['sessions_number'] = len(campboard['sessions'])		
 		self.db.execute('''DELETE FROM sessions WHERE name=%s''' , sess)		
-		self.ws_broadcast(gen)
+		self.ws_broadcast_channel('main', gen)
 		
 	
 	@classmethod
