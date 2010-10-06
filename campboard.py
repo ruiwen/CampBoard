@@ -84,7 +84,13 @@ class MainHandler(BaseHandler):
 		print "Main"
 		# Craft a broadcast object on first load to seed the page with relevant data
 		stats = Updater.general_update()
-		stats['recent_tweets'] = Updater.recent_tweets()
+
+		rt = Updater.recent_tweets()
+		if rt:
+			# Set cookie for last tweet id
+			self.set_cookie('last_tweet_id', unicode(rt[0]['id']))
+			stats.update({"recent_tweets": rt})
+
 		self.render("index.html", stats=stats)
 
 
