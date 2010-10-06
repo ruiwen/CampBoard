@@ -1,27 +1,31 @@
 var CampBoard = CampBoard || {}
 
 CampBoard.ws_init = function(){
-	this.ws = $.gracefulWebSocket("ws://ubuntuvm:8888/campsocket/", {fallbackSendURL: "http://ubuntuvm:8080/poll/", fallbackPollURL: "http://ubuntuvm:8080/poll/", fallbackPollInterval: 5000})
-	//new WebSocket("ws://ubuntuvm:8888/campsocket/");
-	
-	this.ws.onopen = function(){
-		console.log("Registering")
-		console.log((this.send("Register: " + document.URL)?"Sent":"Unsent"));
-	}
-	
-	this.ws.onmessage = function(msg) {
-		//alert("Received");
-		console.log("Received");
-		console.log(msg.data);
+
+	this.__ws_init = function() {
+		this.ws = $.gracefulWebSocket("ws://ubuntuvm:8888/campsocket/", {fallbackSendURL: "http://ubuntuvm:8080/poll/", fallbackPollURL: "http://ubuntuvm:8080/poll/", fallbackPollInterval: 5000})
+		//new WebSocket("ws://ubuntuvm:8888/campsocket/");
 		
-		CampBoard.parse_message(msg['data']);
+		this.ws.onopen = function(){
+			console.log("Registering")
+			console.log((this.send("Register: " + document.URL)?"Sent":"Unsent"));
+		}
+		
+		this.ws.onmessage = function(msg) {
+			console.log("Received");
+			CampBoard.parse_message(msg['data']);
+		}
+		
+		this.ws.onerror = function(textStatus, e) {
+			console.log("Error")
+			console.log(textStatus);
+			console.log(e)
+		}
+
 	}
+	this.__ws_init();
+
 	
-	this.ws.onerror = function(textStatus, e) {
-		console.log("Error")
-		console.log(textStatus);
-		console.log(e)
-	}
 }
 
 CampBoard.parse_message = function(d) {
