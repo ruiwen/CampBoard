@@ -123,6 +123,25 @@ CampBoard.parse_message = function(d) {
 		// If we're on a session page
 		if(data['channel'] && document.URL.match(/\/session\/(\w+)/)[1] == data['channel']) {
 			if(data['votes']) {
+				if($('#session-votes-stats .placeholder') && (data['votes']['positive'] > 0 || data['votes']['negative'] > 0)) { // No votes yet, so we create our listing
+					// Create the positive listing
+					var html = '<li class="session-vote"><h3><span class="session-vote-label stats-label">Positive</span> <span id="session-vote-positive" class="session-vote-count stats-value">' + data['votes']['positive'] + '</span></h3></li>';
+					$(html).insertBefore($('#session-votes-stats .placeholder'));
+					
+					// Create the negative listing
+					html = '<li class="session-vote"><h3><span class="session-vote-label stats-label">Negative</span> <span id="session-vote-negative" class="session-vote-count stats-value">' + data['votes']['negative'] + '</span></h3></li>';
+					$(html).insertBefore($('#session-votes-stats .placeholder'));
+					
+					$('#session-votes-stats .placeholder').remove();
+
+					// Insert the graph
+					if($('#session-graph .placeholder')) { // If the vote counts were 0, but now they aren't..
+						// .. then insert the graph image
+						$('#session-graph').html('<img src="http://chart.apis.google.com/chart?chxs=0,676767,40&chxt=x&chs=400x250&cht=p&chco=5B9DC8&chd=t:' + data['votes']['positive'] + ',' + data['votes']['negative'] + '&chp=0.628&chl=Yes|No" height="250" width="400">'); // Ugly, ugly non-multiline Javascript strings
+					}
+
+				}
+			
 				$('#session-vote-positive').html(data['votes']['positive'])
 				$('#session-vote-negative').html(data['votes']['negative'])
 				$('#session-votes-total').html(data['votes']['positive'] + data['votes']['negative'])
