@@ -43,6 +43,14 @@ table {
 	border-spacing: 0;
 }
 
+sub { vertical-align: sub; font-size: smaller; }
+sup { vertical-align: super; font-size: smaller; }
+
+sup {
+	font-family: "Georgia", "Times New Roman", serif;
+	font-style: italic;
+}
+
 /** General styling **/
 body {
 	color: #444;
@@ -234,8 +242,13 @@ header h1 {
 /* 	margin-bottom: 20px; */
 }
 
-#tweet-stats {
-	margin-right: 2em;
+#masthead sup {
+	-webkit-transform-origin: center center;
+	-moz-transform: rotate(30deg);
+	-webkit-transform: rotate(30deg);
+	color: #ffa200;
+	font-size: 0.2em;
+	position: absolute;
 }
 
 #tweet-stats .stats-label {
