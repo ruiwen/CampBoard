@@ -180,7 +180,6 @@ class CampboardSocket(tornado.websocket.WebSocketHandler):
 		
 	def on_message(self, message):
 		print "Message: " + message
-		#self.write_message(unicode(dir(self)))
 		
 		try:
 			msg = json.loads(message)
@@ -226,8 +225,6 @@ class CampboardSocket(tornado.websocket.WebSocketHandler):
 				campboard['ws_channels'][channel].append(self)
 				
 
-			print "Adding to normal client list"
-			# We add all clients to the general list anyway so that everyone gets broadcasts
 			if self not in campboard['ws_clients']:
 				print "Adding to client list"
 				campboard['ws_clients'].append(self)			
@@ -457,20 +454,6 @@ class Updater(object):
 		
 		votes = {}
 		
-# 		if vote in ['positive', 'stats', 'all']:
-# 			res = self.db.query('SELECT votes FROM session_votes WHERE session=%s', '%s_positive' % session)
-# 			if res:
-# 				votes['positive'] = res[0].votes
-# 			else:
-# 				votes['positive'] = 0
-# 		
-# 		if vote in ['negative', 'stats', 'all']:
-# 			res = self.db.query('SELECT votes FROM session_votes WHERE session=%s', '%s_negative' % session)
-# 			if res:
-# 				votes['negative'] = res[0].votes
-# 			else:
-# 				votes['negative'] = 0
-
 		res = self.db.query("SELECT positive, negative FROM session_votes WHERE session = %s", session)
 
 		if res:
@@ -490,15 +473,7 @@ class Updater(object):
 		broadcast = {}
 		
 		broadcast['channel'] = session
-
-# 		if selector in ['positive', 'stats', 'all']:
-# 			session_positive = self.db.query("SELECT COUNT(*) as positive FROM tweets WHERE text LIKE %s", "+1")[0].positive
-# 			broadcast['session_positive'] = session_positive
-# 
-# 		if selector in ['negative', 'stats', 'all']:
-# 			session_negative = self.db.query("SELECT COUNT(*) as negative FROM tweets WHERE text LIKE %s", "-1")[0].negative
-# 			broadcast['session_negative'] = session_negative
-		
+	
 		if selector in ['positive', 'negative', 'stats', 'all']:
 			broadcast['votes'] = self.session_votes(session, selector)
 		
@@ -557,9 +532,7 @@ class Updater(object):
 		print "Broadcasting to %d clients" % (len(campboard['ws_clients']))
 		try:
 			for i in campboard['ws_clients']:
-				print data
 				i.write_message(data)
-			
 		except:
 			pass # Fail silently
 
