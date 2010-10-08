@@ -241,12 +241,6 @@ h3 { font-size: 20px; }
 	padding-top: 25px;
 }
 
-#sessions-more-link {
-	display: inline-block;
-	font-family: "Georgia", "Times New Roman", serif;
-	font-style: italic;
-	margin-top: 8px;
-}
 
 .panel {
 	border-left: 2px dotted #888;
