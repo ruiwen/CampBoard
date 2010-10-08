@@ -1,15 +1,14 @@
 {% extends "base.html" %}
 
 {% block main %}
-		<header><h1>Statistics</h1></header>
 
-
-		<div id="main-stats">
+	<div id="index">
+		<div id="stats">
 			<div id="tweet-stats">
 				<header class="stats-header styled-header"><h2>tweets</h2></header>
 				<ul class="stats-list">
-					<li><h2><span class="stats-label">Total tweets</span>  <span class="stats-value" id="total-tweets">{{ stats['total_tweets'] }}</span></h2></li>
-					<li><h2><span class="stats-label">Unique users</span>  <span class="stats-value" id="unique-tweeters">{{ stats['unique_tweeters'] }}</span></h2></li>
+					<li><h2 class="stats-label">Total tweets</h2>  <span class="stats-value" id="total-tweets">{{ stats['total_tweets'] }}</span></li>
+					<li><h2 class="stats-label">Unique users</h2>  <span class="stats-value" id="unique-tweeters">{{ stats['uniques'] }}</span></li>
 				</ul>
 			</div>
 			
@@ -19,10 +18,8 @@
 					{% if stats['sessions'] %}
 						{% for sess in stats['sessions'] %}
 							<li id="session-{{ sess[0] }}" class="session">
-								<h2 class="clearfix">
-									<span class='stats-label session-title'><a href="/session/{{ sess[0] }}/">#{{ sess[0] }}</a></span>
-									<span class='session-count stats-value'>+{{ sess[1] }}</span>
-								</h2>
+								<h2 class="stats-label session-title"><a href="/session/{{ sess[0] }}/" title="{{ sess[0] }}">#{{ sess[0] }}</a></h2>
+								<span class='session-count stats-value'>+{{ sess[1] }}</span>
 							</li>
 						{% end %}
 					{% else %}
@@ -31,10 +28,10 @@
 				</ul>
 			</div>	
 		</div>
-				
-		<div id="main-recent">
+
+		<div id="recent-tweets" class="panel">
 			<header class="styled-header"><h2>recent<br>&nbsp;&nbsp;tweets</h2></header>
-			<ul id="recent-tweets">
+			<ul id="tweets">
 				{% if stats['recent_tweets'] %}
 					{% for tweet in stats['recent_tweets'] %}
 						<li>
@@ -50,5 +47,5 @@
 				{% end %}
 			</ul>
 		</div>	
-		
+	</div>
 {% end %}

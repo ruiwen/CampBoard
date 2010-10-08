@@ -56,8 +56,8 @@ CampBoard.parse_message = function(d) {
 			$('#total-tweets').html(data['total_tweets']);
 		}
 		
-		if(data['unique_tweeters']) {
-			$('#unique-tweeters').html(data['unique_tweeters'])
+		if(data['uniques']) {
+			$('#unique-tweeters').html(data['uniques'])
 		}
 
 		if(data['sessions_number'] >= 0) {
@@ -75,11 +75,11 @@ CampBoard.parse_message = function(d) {
 				html += "</li>";
 				
 				if($('#recent-tweets > .placeholder:first-child').length == 1) {
-					$(html).insertBefore($('#recent-tweets > .placeholder:first-child'));
-					$('#recent-tweets > .placeholder').remove();
+					$(html).insertBefore($('#recent-tweets .placeholder:first-child'));
+					$('#recent-tweets .placeholder').remove();
 				}
 				else {
-					$(html).insertBefore($('#recent-tweets > li:first-child'))
+					$(html).insertBefore($('#recent-tweets li:first-child'))
 				}			
 			}
 		}
@@ -90,7 +90,7 @@ CampBoard.parse_message = function(d) {
 				for(var i in sess) {
 					// sess[i][0] is the session name
 					// sess[i][1] is the cumulative vote count, or the 'DEL' instruction
-					var sess_format = "<h2><span class='stats-label session-title'><a href='/session/" + sess[i][0] + "/'>#" + sess[i][0] + "</a></span>  <span class='session-count stats-value'>+" + sess[i][1] + "</span></h2>";
+					var sess_format = "<h2 class='stats-label session-title'><a href='/session/" + sess[i][0] + "/' title='" + sess[i][0] + "'>#" + sess[i][0] + "</a></h2>  <span class='session-count stats-value clearfix'>+" + sess[i][1] + "</span>";
 					if($('#session-' + sess[i][0]).length == 0) { // Listing for session does not exist yet
 						var html = "<li class='session' id='session-" + sess[i][0] + "'>"; // So we have to create our own <li>
 						html += sess_format;
@@ -139,11 +139,11 @@ CampBoard.parse_message = function(d) {
 			if(data['votes']) {
 				if($('#session-votes-stats .placeholder') && (data['votes']['positive'] > 0 || data['votes']['negative'] > 0)) { // No votes yet, so we create our listing
 					// Create the positive listing
-					var html = '<li class="session-vote"><h3><span class="session-vote-label stats-label">Positive</span> <span id="session-vote-positive" class="session-vote-count stats-value">' + data['votes']['positive'] + '</span></h3></li>';
+					var html = '<li class="session-vote"><h2 class="session-vote-label stats-label">Positive</h2> <span id="session-vote-positive" class="session-vote-count stats-value">' + data['votes']['positive'] + '</span></li>';
 					$(html).insertBefore($('#session-votes-stats .placeholder'));
 					
 					// Create the negative listing
-					html = '<li class="session-vote"><h3><span class="session-vote-label stats-label">Negative</span> <span id="session-vote-negative" class="session-vote-count stats-value">' + data['votes']['negative'] + '</span></h3></li>';
+					html = '<li class="session-vote"><h2 class="session-vote-label stats-label">Negative</span></h2> <span id="session-vote-negative" class="session-vote-count stats-value">' + data['votes']['negative'] + '</span></li>';
 					$(html).insertBefore($('#session-votes-stats .placeholder'));
 					
 					$('#session-votes-stats .placeholder').remove();
@@ -151,7 +151,7 @@ CampBoard.parse_message = function(d) {
 					// Insert the graph
 					if($('#session-graph .placeholder')) { // If the vote counts were 0, but now they aren't..
 						// .. then insert the graph image
-						$('#session-graph').html('<img src="http://chart.apis.google.com/chart?chxs=0,676767,40&chxt=x&chs=400x250&cht=p&chco=5B9DC8&chd=t:' + data['votes']['positive'] + ',' + data['votes']['negative'] + '&chp=0.628&chl=Yes|No" height="250" width="400">'); // Ugly, ugly non-multiline Javascript strings
+						$('#session-graph').html('<img src="http://chart.apis.google.com/chart?chxs=0,676767,15&chxt=x&chs=300x200&cht=p&chco=5B9DC8&chd=t:' + data['votes']['positive'] + ',' + data['votes']['negative'] + '&chp=0.628&chl=Yes|No" height="200" width="300">'); // Ugly, ugly non-multiline Javascript strings
 					}
 
 				}
@@ -159,7 +159,7 @@ CampBoard.parse_message = function(d) {
 				$('#session-vote-positive').html(data['votes']['positive'])
 				$('#session-vote-negative').html(data['votes']['negative'])
 				$('#session-votes-total').html(data['votes']['positive'] + data['votes']['negative'])
-				$('#session-tweet-count').html(data['tweet_count'])
+				$('#session-tweet-count').html(data['total_tweets'])
 			}
 		}
 		

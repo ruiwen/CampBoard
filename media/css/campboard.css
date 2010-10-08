@@ -67,92 +67,43 @@ html { -webkit-font-smoothing: antialiased; }
 label, input[type=button], input[type=submit], button { cursor: pointer; }
 
 
-h1 {
-	font-size: 40px;
-}
-
-h2 {
-	font-size: 36px;
-}
-
-h3 {
-	font-size: 32px;
-}
-
 a {
 	color: #555;
-	text-decoration: underline;
-}
-
-a:visited {
-	color: #666;
-}
-
-
-/** Header Styling **/
-#masthead {
-/*
-	-moz-border-radius-bottomleft: 5px;
-	-moz-border-radius-bottomright: 5px;
-	-webkit-border-bottom-left-radius: 5px;
-	-webkit-border-bottom-right-radius: 5px;
-	-moz-box-shadow: 0px 3px 5px grey;
-	-webkit-box-shadow: 0px 3px 5px grey;
-	margin-bottom: 30px;
-	padding: 1px 0px;
-*/
-}
-
-header a {
 	text-decoration: none;
 }
 
-header h1 {
-	margin: 15px;
-}
+a:visited { color: #666; }
 
-/** Stats styling **/
-.stats-list li {
-	border-bottom: 5px solid #333;
-	margin: 15px 0px;
-	padding: 8px;
-}
+/** General Styles **/
 
+h1 { font-size: 28px; }
+h2 { font-size: 24px; }
+h3 { font-size: 20px; }
+
+
+/** Styled blocks **/
 .styled-header {
-	/** Reset **/
-	-moz-border-radius-bottomleft: 0px;
-	-moz-border-radius-bottomright: 0px;
-	-webkit-border-bottom-left-radius: 0px;
-	-webkit-border-bottom-right-radius: 0px;
-	-moz-box-shadow: none;
-	-webkit-box-shadow: none;
-	margin-bottom: 0px;
-	padding: 0px;
-	
-	/** Actual styling **/
 	-webkit-transform-origin: center center;
-	-moz-transform: rotate(30deg);
-	-webkit-transform: rotate(30deg);
+	-moz-transform: rotate(-30deg);
+	-webkit-transform: rotate(-30deg);
 	color: #dd3322;
 	display: inline-block;
 	font-size: 0.6em;
 	position: relative;
-	left: 80%;
-	top: 5%;
+	left: -10px;
+	/*top: 10%;*/
 }
 
-.styled-header:hover {
-	top: 4.5%;
+.styled-header:hover {	
+	left: 3px;
 }
+
+
+/** Stats styling **/
 
 .stats-label {
 	display: inline-block;
-	vertical-align: top;
-	width: 5em;
-}
-
-.stats-label a {
-	text-decoration: none;
+	width: 9.0em;
 }
 
 .stats-label a:after {
@@ -165,46 +116,47 @@ header h1 {
 }
 
 .stats-value {
-	display: inline-block;
-	font-family: "Georgia", serif;
-	font-size: 2.5em;
-	vertical-align: top;
+	font-family: "Georgia", "Times New Roman", serif;
+	font-size: 32px;
+	text-overflow: ellipsis;
 }
 
 
-/** Tweet list styling **/
-#recent-tweets {
-	margin: auto;
-	width: 70%;
+/** Session styling **/
+.session-title {
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
-#recent-tweets li {
-/* 	height: 4.0em; */
+/** Tweet styling **/
+#tweets {
+	margin-top: 20px;
+}
+
+#tweets li {
 	border-bottom: 1px dotted #ccc;
-	padding: 20px 10px;
-	margin: 30px 0px;
+	padding: 3px 10px;
+	margin: 10px 0px;
 }
 
 .tweet {
-	overflow: hidden;
-	width: 100%;
+	font-family: "Georgia", "Times New Roman", serif;
 }
 
 .tweet-image {
 	display: inline-block;
-	float: left;
 	height: 48px;
 	width: 48px;
 }
 
 .tweet-text {
-	font-family: "Georgia", serif;
-	font-size: 2.0em;
+	display: inline-block;
+	font-size: 24px;
 	margin-right: 10px;
-	padding-bottom: 5px;
-	padding-left: 63px;
+	padding: 0px 0px 5px 20px;
 	text-align: right;
-/* 	width: 10.0em; */
+	vertical-align: top;
+	width: 80%
 }
 
 .tweet-permalink {
@@ -221,6 +173,11 @@ header h1 {
 }
 
 
+.tweet-permalink a:hover {
+	border-bottom: 1px dotted #ddd;
+	color: #777;
+}
+
 /** Placeholder **/
 .placeholder {
 	color: #ccc;
@@ -232,14 +189,18 @@ header h1 {
 }
 
 
-/** Main **/
-#main {
-	margin: auto;
-	max-width: 900px;
+/** Main styling **/
+#masthead {
+	margin: 20px 0px 50px;
+	position: relative;
+	text-align: center;
 }
 
-#main header {
-/* 	margin-bottom: 20px; */
+#masthead h1 {
+	display: inline-block;
+	border-bottom: 5px solid #555;
+	font-size: 4.0em;
+	padding: 0px 30px;
 }
 
 #masthead sup {
@@ -251,99 +212,73 @@ header h1 {
 	position: absolute;
 }
 
-#tweet-stats .stats-label {
-	width: 7em;
+#main {
+	margin: auto;
+	max-width: 1024px;
+	min-width: 980px;
 }
 
+#index {
 
-#tweet-stats, #session-stats {
-	display: inline-block;
+}
+
+#stats {
+	display: inline-block;	
+	padding-right: 20px;
+	position: relative;
 	vertical-align: top;
-	width: 45%;
+	max-width: 30%;
+	min-width: 300px;
 }
 
-
-#main-recent {
-	margin-top: 30px;
+#stats > div {
+	border-bottom: 5px solid #555;
+	padding-bottom: 20px;
+	margin-bottom: 30px;
 }
 
-#main-recent header {
-	top: 8%;
-	left: 88%;
+#stats .stats-list {
+	padding-top: 25px;
 }
 
-#main-recent header:hover {
-	top: 7.5%;
+#sessions-more-link {
+	display: inline-block;
+	font-family: "Georgia", "Times New Roman", serif;
+	font-style: italic;
+	margin-top: 8px;
+}
+
+.panel {
+	border-left: 2px dotted #888;
+	border-right: 2px dotted #888;
+	display: inline-block;
+	max-width: 60%;
+	padding: 0px 30px;
+	position: relative;
 }
 
 /** Session styling **/
-
 #session-votes-stats, 
 #session-graph {
-	display: inline-block;
-	vertical-align: top;
-	width: 400px;
+
 }
 
 #session-graph {
-	position: relative;
-	top: -60px;
-}
-.session-vote {
-	font-size: 3em;
-	padding-left: 1em;
-}
 
-.session-vote-label {
-	width: 8em;
-}
-
-
-/** Footer styling **/
-
-footer {
-	font-family: "Georgia", serif;
-	font-size: 0.8em;
-	font-style: italic;
-	margin: 20px auto;
-	text-align: center;
 }
 
 
 /** Admin styling **/
-#saywhat {
-	text-align: center;
-}
-
-#saywhat input {
-	border: none;
-	border-bottom: 2px dotted #ccc;
-	font-size: 4.0em;
-}
-
-#admin-stats-list li {
-	display: inline-block;
-	width: 17.5em;
-}
-
-#admin-stats h1,
-#admin-sessions h1,
-#admin-controls h1 {
+#admin .styled-header {
+	-webkit-transform-origin: center center;
+	-moz-transform: rotate(0deg);
+	-webkit-transform: rotate(0deg);
 	color: #dd3322;
+	display: block;
+	font-size: 1.0em;
+	position: inherit;
+	left: 0px;
 }
-
-#admin-sessions,
-#admin-controls {
-	display: inline-block;
-	margin-top: 30px;
-	vertical-align: top;
-	width: 440px;
-}
-
-#admin-sessions {
-
-}
-
 
 #admin-controls ul {
 	list-style-type: none;
@@ -380,6 +315,32 @@ footer {
 }
 
 
+/** Footer styling **/
+footer {
+	font-family: "Georgia", serif;
+	font-size: 0.8em;
+	font-style: italic;
+	margin: 30px auto;
+	text-align: center;
+}
+
+
+/** CSS Hacks **/
+/* =Clearfix (all browsers)
+--------------------------------*/
+.clearfix:after {
+content: ".";
+display: block;
+height: 0;
+clear: both;
+visibility: hidden;
+}
+/* IE6 */ 
+* html .clearfix {height: 1%;}
+/* IE7 */
+*:first-child+html .clearfix {min-height: 1px;}
+
+
 /** Additional styling for mobile **/
 /*
  * Media queries for responsive design
@@ -396,10 +357,30 @@ footer {
 
 /* Grade-A Mobile Browsers (Opera Mobile, iPhone Safari, Android Chrome)  
    Consider this: www.cloudfour.com/css-media-query-for-mobile-is-fools-gold/ */
-@media screen and (max-device-width: 320px) {
+@media screen and (max-device-width: 480px) {
+	html, body {
+		border: 1px solid #000;
+		width: 100%;
+	}
 
-  
-	/* Prevent iOS, WinMobile from adjusting font size */
-	html { -webkit-text-size-adjust:none; -ms-text-size-adjust:none; } 
+	h1 { font-size: 24px; }	
+	h2 { font-size: 20px; }
+	h3 { font-size: 16px; }
+
+	img {
+		height: 24px;
+		width: 24px;
+	}
+
+	/** Main styling **/
+	#main {
+		overflow: hidden;
+	}
+
+	#index {
+		border: 1px solid #000;
+		width: 100%;
+	}
+
 }
 

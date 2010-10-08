@@ -34,42 +34,59 @@
 	</script>
 {% end %}
 
-{% block main %}
-	<div id="admin-stats">
-		<h1>Admin</h1>
-		<ul id="admin-stats-list" class="stats-list">
-			<li><h2><span class="admin-stats stats-label">Total tweeters</span></h2> <span id="total-tweets" class="stats-value">0</span></li>
-			<li><h2><span  class="admin-stats stats-label">Unique tweeters</span></h2> <span id="unique-tweeters" class="stats-value">0</span></li>
-			<li><h2><span  class="admin-stats stats-label">Total sessions</span></h2> <span id="total-sessions" class="stats-value">0</span></li>
-		</ul>
-	</div>
-	
-	<div id="admin-sessions">
-		<h1>Sessions</h1>
-		<ul id="session-stats-list" class="stats-list">
-			<li class="placeholder">None yet.</li>
-		</ul>
-	</div>
-	
-	<div id="admin-controls">
-		<h1>Controls</h1>
-		<ul>
-			<li><form onsubmit="CampBoard.Admin.SessionAdd(); return false;"><input type="text" placeholder="Add session?" id="session-add"><input type='submit' value="+"></li></form>
-			<li><form onsubmit="CampBoard.Admin.SessionRemove(); return false;"><input type="text" placeholder="Remove session?" id="session-remove"><input type='submit' value='-'></li></form>
-			<li>
-				<form onsubmit="CampBoard.Admin.MessageBroadcast(); return false;">
-				<input type="text" placeholder="Broadcast message" id="message-broadcast"><input type='submit' value='!'>
-				<br>
-				<select id="admin-broadcast-channel">
-					<option value="all">All</option>
-					<option value="main">Main</option>
-					{% for sess in sessions %}
-					<option value="{{ sess }}">{{ sess }}</option>
-					{% end %}
-				</select>
-				</form>
-			</li>
-		</ul>
-	</div>
+{% block pageheading %} — Admin {% end %}
 
+{% block main %}
+	<div id="admin">
+		<div id="stats">
+			<div id="admin-stats">
+				<header class="styled-header"><h1>Admin</h1></header>
+				<ul id="admin-stats-list" class="stats-list">
+					<li><h2 class="admin-stats stats-label">Total tweeters</span></h2> <span id="total-tweets" class="stats-value">0</span></li>
+					<li><h2 class="admin-stats stats-label">Unique tweeters</span></h2> <span id="unique-tweeters" class="stats-value">0</span></li>
+					<li><h2 class="admin-stats stats-label">Total sessions</span></h2> <span id="total-sessions" class="stats-value">0</span></li>
+				</ul>
+			</div>
+			
+			<div id="admin-sessions">
+				<header class="styled-header"><h1>Sessions</h1></header>
+				<ul id="session-stats-list" class="stats-list">
+					{% if stats['sessions'] %}
+						{% for sess in stats['sessions'] %}
+							<li id="session-{{ sess[0] }}" class="session">
+								<h2 class="stats-label session-title"><a href="/session/{{ sess[0] }}/" title="{{ sess[0] }}">#{{ sess[0] }}</a></h2>
+								<br>
+								<span class='session-count stats-value'>v: +{{ sess[1] }}</span> / 
+								<span class='session-count stats-value'>t: {{ sess[2] }}</span> /
+								<span class='session-count stats-value'>u: {{ sess[3] }}</span>
+							</li>
+						{% end %}
+					{% else %}
+						<li class="placeholder"><h2>None yet</h2></li>
+					{% end %}
+				</ul>
+			</div>
+		</div>
+		
+		<div id="admin-controls" class="panel">
+			<header class="styled-header"><h1>Controls</h1></header>
+			<ul>
+				<li><form onsubmit="CampBoard.Admin.SessionAdd(); return false;"><input type="text" placeholder="Add session?" id="session-add"><input type='submit' value="+"></li></form>
+				<li><form onsubmit="CampBoard.Admin.SessionRemove(); return false;"><input type="text" placeholder="Remove session?" id="session-remove"><input type='submit' value='-'></li></form>
+				<li>
+					<form onsubmit="CampBoard.Admin.MessageBroadcast(); return false;">
+					<input type="text" placeholder="Broadcast message" id="message-broadcast"><input type='submit' value='!'>
+					<br>
+					<select id="admin-broadcast-channel">
+						<option value="all">All</option>
+						<option value="main">Main</option>
+						{% for sess in stats['sessions'] %}
+						<option value="{{ sess[0] }}">{{ sess[0] }}</option>
+						{% end %}
+					</select>
+					</form>
+				</li>
+			</ul>
+		</div>
+	</div>
 {% end %}
