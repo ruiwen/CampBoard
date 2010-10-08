@@ -358,29 +358,111 @@ visibility: hidden;
 /* Grade-A Mobile Browsers (Opera Mobile, iPhone Safari, Android Chrome)  
    Consider this: www.cloudfour.com/css-media-query-for-mobile-is-fools-gold/ */
 @media screen and (max-device-width: 480px) {
-	html, body {
-		border: 1px solid #000;
-		width: 100%;
+
+	html div {
+		padding: 0px 0px;
 	}
 
-	h1 { font-size: 24px; }	
-	h2 { font-size: 20px; }
-	h3 { font-size: 16px; }
+	html, body, #main, #stats, .panel {
+		max-width: 480px;
+		min-width: 320px;
+		width: 100%;
+	}
+	
+	#main div {
+		border: 0px;
+		margin: 0px;
+		padding: 0px;		
+	}
 
-	img {
-		height: 24px;
-		width: 24px;
+	/** Styled blocks **/
+	.styled-header {
+		-webkit-transform-origin: center center;
+		-moz-transform: rotate(0deg);
+		-webkit-transform: rotate(0deg);
+		color: #dd3322;
+		display: inline-block;
+		font-size: 2.0em;
+		position: relative;
+		left: 0px;
+		/*top: 10%;*/
+		text-shadow: -1px -1px 1px #999;
+	}
+	
+	.styled-header:hover {	
+		left: 0px;
+	}
+
+
+	/** Stats styling **/
+	.stats-label {
+		display: inline-block;
+		font-size: 26px;
+		width: 8.0em;
+	}
+	
+	.stats-label a:after {
+		content: '\0A0 \0BB';
+	}
+
+
+	/** Tweet styling **/
+	#tweets {
+		margin: 10px 0px;
+	}
+	
+	.tweet-text {
+		font-size: 16px;
+		margin-right: 0px;
+		width: 75%;
+	}
+
+
+	/** Placeholder **/
+	.placeholder {
+		font-size: 3.0em;
 	}
 
 	/** Main styling **/
-	#main {
-		overflow: hidden;
+	#masthead {
+		/*background-color: rgba(255,252,74, 0.4);*/
+		/*background-color: rgba(221,51,34,1.0);*/
+		background-color: rgba(189,45,30,1.0);
+		border-bottom: 1px solid #555;
+		color: #fff;
+		-webkit-box-shadow: #555 0px 1px 3px;
+		margin: 0px 0px 10px 0px;
+		text-align: left;
+		text-shadow: -1px -1px 1px #777;
 	}
 
-	#index {
-		border: 1px solid #000;
-		width: 100%;
+	#masthead h1{
+		border: none;
+		font-size: 1.1em;
+		padding: 7px 20px;
 	}
 
+	#masthead h1 a {
+		color: #fff;
+	}
+	
+	#masthead sup {
+		color: #ffee00;
+	}
+	
+	#stats > div {
+		border: 0px;
+		padding-bottom: 0px;
+		margin-bottom: 0px;
+	}
+	
+	#stats .stats-list {
+		display: none;
+		padding: 0px 0px 0px 15px;
+	}
+	
+	#stats .styled-header h2:after {
+		content: '\0A0 \0BB';
+	}	
 }
 

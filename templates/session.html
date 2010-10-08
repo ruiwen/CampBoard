@@ -24,40 +24,40 @@
 					
 			<div id="session-votes">
 				<header class="styled-header"><h2>votes</h2></header>
-				<div id="session-votes-stats">
-					<ul class='stats-list'>
-						{% if stats['votes']['positive'] + stats['votes']['negative'] > 0 %}
-							<li class="session-vote">
-								<h2 class="session-vote-label stats-label">Positive</h2>
-								<span id="session-vote-positive" class="session-vote-count stats-value">{{ stats['votes']['positive'] }}</span>
-							</li>
-							<li class="session-vote">
-								<h2 class="session-vote-label stats-label">Negative</span></h2>
-								<span id="session-vote-negative" class="session-vote-count stats-value">{{ stats['votes']['negative'] }}</span>
-							</li>
-						{% else %}
-							<li class="placeholder"><h2>No votes yet</h2></li>
-						{% end %}
-					</ul>
-				</div>
+				<ul class='stats-list'>
+					{% if stats['votes']['positive'] + stats['votes']['negative'] > 0 %}
+						<li class="session-vote">
+							<h2 class="session-vote-label stats-label">Positive</h2>
+							<span id="session-vote-positive" class="session-vote-count stats-value">{{ stats['votes']['positive'] }}</span>
+						</li>
+						<li class="session-vote">
+							<h2 class="session-vote-label stats-label">Negative</span></h2>
+							<span id="session-vote-negative" class="session-vote-count stats-value">{{ stats['votes']['negative'] }}</span>
+						</li>
+					{% else %}
+						<li class="placeholder"><h2>No votes yet</h2></li>
+					{% end %}
+				</ul>
 			</div>
 			
 			<div id="session-graph">				
 				<header class="styled-header"><h2>graph</h2></header>
 				<!-- Implement graph here -->
-				{% if stats['votes']['positive'] == 0 and stats['votes']['negative'] == 0 %}
-					<p class="placeholder" style="font-size: 80px;">no votes yet</p>			
-				{% else %}
-					<img src="http://chart.apis.google.com/chart
-						   ?chxs=0,676767,15
-						   &chxt=x
-						   &chs=300x200
-						   &cht=p
-						   &chco=5B9DC8
-						   &chd=t:{{ stats['votes']['positive'] or 0 }},{{ stats['votes']['negative'] or 0 }}
-						   &chp=0.628
-						   &chl=Yes|No" height="200" width="300">
-				{% end %}				
+				<div class='stats-list'>
+					{% if stats['votes']['positive'] == 0 and stats['votes']['negative'] == 0 %}
+						<p class="placeholder" style="font-size: 80px;">no votes yet</p>			
+					{% else %}
+						<img src="http://chart.apis.google.com/chart
+							   ?chxs=0,676767,15
+							   &chxt=x
+							   &chs=300x200
+							   &cht=p
+							   &chco=5B9DC8
+							   &chd=t:{{ stats['votes']['positive'] or 0 }},{{ stats['votes']['negative'] or 0 }}
+							   &chp=0.628
+							   &chl=Yes|No" height="200" width="300">
+					{% end %}
+				</div>
 			</div>
 		</div>
 
