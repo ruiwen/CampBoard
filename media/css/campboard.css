@@ -453,6 +453,15 @@ visibility: hidden;
 	
 	#stats .styled-header h2:after {
 		content: '\0A0 \0BB';
-	}	
+	}
+	
+	/** Adming styling **/
+	#admin-controls input[type=text] {
+		font-size: 1.3em;
+	}
+	
+	#admin-controls input[type=submit] {
+		font-size: 1.5em;
+	}
 }
 
