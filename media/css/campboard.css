@@ -76,11 +76,6 @@ a:visited { color: #666; }
 
 /** General Styles **/
 
-h1 { font-size: 28px; }
-h2 { font-size: 24px; }
-h3 { font-size: 20px; }
-
-
 /** Styled blocks **/
 .styled-header {
 	-webkit-transform-origin: center center;
@@ -88,7 +83,7 @@ h3 { font-size: 20px; }
 	-webkit-transform: rotate(-30deg);
 	color: #dd3322;
 	display: inline-block;
-	font-size: 0.6em;
+	font-size: 28px;
 	position: relative;
 	left: -10px;
 	/*top: 10%;*/
@@ -103,6 +98,7 @@ h3 { font-size: 20px; }
 
 .stats-label {
 	display: inline-block;
+	font-size: 24px;
 	width: 9.0em;
 }
 
@@ -182,7 +178,7 @@ h3 { font-size: 20px; }
 .placeholder {
 	color: #ccc;
 	font-family: "Georgia", serif;
-	font-size: 8.0em;
+	font-size: 5.5em;
 	font-style: italic;
 	text-align: center;
 	text-transform: lowercase;
@@ -269,7 +265,7 @@ h3 { font-size: 20px; }
 	-webkit-transform: rotate(0deg);
 	color: #dd3322;
 	display: block;
-	font-size: 1.0em;
+	font-size: 32px;
 	position: inherit;
 	left: 0px;
 }
