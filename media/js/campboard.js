@@ -7,7 +7,7 @@ CampBoard.ws_init = function(){
 	this.keepAliveReply = 0;
 
 	this.__ws_init = function() {
-		this.ws = $.gracefulWebSocket("ws://ubuntuvm:8888/campsocket/", {fallbackSendURL: "http://ubuntuvm:8080/poll/", fallbackPollURL: "http://ubuntuvm:8080/poll/", fallbackPollInterval: 5000})
+		this.ws = $.gracefulWebSocket("ws://ubuntuvm:8888/campsocket/", {fallbackSendURL: "http://ubuntuvm:8080/poll/", fallbackPollURL: "http://ubuntuvm:8080/poll/", fallbackPollInterval: 30000})
 		//new WebSocket("ws://ubuntuvm:8888/campsocket/");
 		
 		this.ws.onopen = function(){
