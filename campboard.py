@@ -160,7 +160,8 @@ class AdminHandler(BaseHandler):
 	def get(self):
 		user = self.get_secure_cookie('user')
 		if user and user == 'campmin':			
-			self.render("admin.html", sessions=campboard['sessions'])
+			stats = Updater.general_update()
+			self.render("admin.html", stats=stats)
 		else:
 			self.render("admin-unauth.html")
 		
@@ -384,16 +385,14 @@ class Updater(object):
 
 		broadcast = {} # Prepare our broadcast object		
 		
-		# Query our db for the relevant info
-		res = self.db.query("SELECT COUNT(user_id) as total_tweets, COUNT(DISTINCT user_id) AS unique_tweeters FROM tweets")[0]
-		
-		broadcast['total_tweets'] = res.total_tweets #random.randint(0,1000) # FAKE
-		broadcast['unique_tweeters'] = res.unique_tweeters #random.randint(0,1000) # FAKE
+		broadcast.update(self.tweet_stats())
 		
 		broadcast['sessions'] = []
 		
 		for session in campboard['sessions']:
-			broadcast['sessions'].append([session, self.session_votes(session).get('cumulative', 0)])
+			stats = self.session_stats(session, 'stats')
+			broadcast['sessions'].append([session, stats['votes'].get('cumulative', 0), stats.get('total_tweets', 0), stats.get('uniques', 0)])
+
 		
 		# Sorts the sessions list according to votes
 		# http://wiki.python.org/moin/HowTo/Sorting/#KeyFunctions
@@ -509,14 +508,7 @@ class Updater(object):
 		
 
 		if selector in ['tweetcount', 'stats', 'all']:
-			tweet_count = self.db.query('''SELECT COUNT(*) AS tweet_count FROM tweets WHERE id IN (
-							SELECT tweet_id FROM hashtags_tweets WHERE hash_id IN
-								(SELECT id FROM hashtags WHERE tag=%s)
-							) ORDER BY created_at DESC''', session)[0].tweet_count
-			
-			#self.db.query("SELECT FOUND_ROWS() AS tweet_count")[0].tweet_count # Requires SQL_CALC_FOUND_ROWS() to be used in immediate previous SQL query
-			
-			broadcast['tweet_count'] = tweet_count
+			broadcast.update(self.tweet_stats(session))
 
 		return broadcast
 
