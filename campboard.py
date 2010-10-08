@@ -90,6 +90,8 @@ class MainHandler(BaseHandler):
 			# Set cookie for last tweet id
 			self.set_cookie('last_tweet_id', unicode(rt[0]['id']))
 			stats.update({"recent_tweets": rt})
+		else:
+			stats['recent_tweets'] = []
 
 		self.render("index.html", stats=stats)
 
@@ -118,6 +120,8 @@ class PollHandler(BaseHandler):
 				self.set_cookie('last_tweet_id', unicode(rt[0]['id']))
 				rt.reverse()
 				channel_poll.update({'recent_tweets': rt})
+			else:
+				channel_poll['recent_tweets'] = []
 			
 			self.write(channel_poll)
 			
@@ -132,6 +136,8 @@ class PollHandler(BaseHandler):
 				self.set_cookie('last_tweet_id', unicode(rt[0]['id']))
 				rt.reverse()
 				general_poll.update({"recent_tweets": rt}) # Reverse the tweet list, since we add from the top in JS
+			else:
+				general_poll['recent_tweets'] = []
 			
 			self.write(general_poll)
 		
