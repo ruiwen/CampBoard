@@ -157,41 +157,38 @@ CampBoard.parse_message = function(d) {
 	
 		if(data['total_tweets']) {
 			$('#total-tweets').html(data['total_tweets']);
-			return;
 		}
 		
 		if(data['uniques']) {
 			$('#unique-tweeters').html(data['uniques']);
-			return;
 		}
 
 		if(data['sessions_number'] >= 0) {
 			$('#total-sessions').html(data['sessions_number']);
-			return;
 		}
 
 		
 		if(data['recent_tweets']) {
 			CampBoard.parse_recent_tweets(data);
-			return;
 		}
 		
 		if(data['sessions']) {
 			CampBoard.parse_sessions(data);
-			return;
 		}	
-		
-		
-		// If we're on a session page
-		if(data['channel'] && document.URL.match(/\/session\/(\w+)/)[1] == data['channel']) {
-			CampBoard.parse_channel(data);
-			return;
-		}
 		
 		if(data['broadcast_message']) {
 			CampBoard.parse_broadcast(data);
-			return;
 		}
+		
+		// If we're on a session page
+		if(data['channel']){
+			var m = document.URL.match(/\/session\/(\w+)/);
+			if(m && m[1] == data['channel']) {
+				CampBoard.parse_channel(data);
+			}
+		}
+		
+
 	}
 	catch(e) {
 		console.log(e)
