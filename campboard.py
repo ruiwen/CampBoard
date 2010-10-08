@@ -405,6 +405,25 @@ class Updater(object):
 
 
 	@classmethod
+	def tweet_stats(self, channel=None):
+		'''Retrieves stats on tweets either for a channel, or across entire event'''
+		stats = {}
+		# Query our db for the relevant info
+		if channel is not None:
+			res = self.db.query('''SELECT COUNT(*) AS total_tweets, COUNT(DISTINCT user_id) as uniques FROM tweets WHERE id IN (
+								SELECT tweet_id FROM hashtags_tweets WHERE hash_id IN
+									(SELECT id FROM hashtags WHERE tag=%s)
+								) ORDER BY created_at DESC''', channel)[0]
+		else:
+			res = self.db.query("SELECT COUNT(user_id) as total_tweets, COUNT(DISTINCT user_id) AS uniques FROM tweets")[0]
+									
+		stats['total_tweets'] = res.total_tweets		
+		stats['uniques'] = res.uniques
+		
+		return stats
+
+
+	@classmethod
 	def recent_tweets(self, channel=None, since=0, limit=10):
 		
 		rt = []
