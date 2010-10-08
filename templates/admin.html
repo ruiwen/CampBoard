@@ -31,6 +31,71 @@
 			
 			$('#message-broadcast').val('');
 		}
+		
+		
+		// Override the CampBoard.parse_sessions() method
+		// Only available to the Admin page
+		CampBoard.parse_sessions = function(data) {
+			var sess = data['sessions'];
+			if(sess instanceof Object) {
+				for(var i in sess) {
+					// sess[i][0] is the session name
+					// sess[i][1] is the cumulative vote count, or the 'DEL' instruction
+					var sess_format = "<h2 class='stats-label session-title'><a href='/session/" + sess[i][0] + "/' title='" + sess[i][0] + "'>#" + sess[i][0] + "</a></h2><br><span class='session-count stats-value'>v: +" + sess[i][1] + "</span> / <span class='session-count stats-value'>t:" + sess[i][2] + "</span> / <span class='session-count stats-value'>u:" + sess[i][3] + "</span>";
+					if($('#session-' + sess[i][0]).length == 0) { // Listing for session does not exist yet
+						var html = "<li class='session' id='session-" + sess[i][0] + "'>"; // So we have to create our own <li>
+						html += sess_format;
+						html += "</li>";
+						
+						if($('#session-stats-list > .placeholder:first-child').length == 1) { // .. and place it in front of the placeholder if necessary
+							$(html).insertBefore($('#session-stats-list > .placeholder:first-child'));
+							$('#session-stats-list > .placeholder').remove();
+						}
+						else {
+							var inserted = false;
+							$('#session-stats-list li').each(function() {
+								var v = $(this).children('.stats-value').eq(0).html();
+								v = parseInt(v.substring(4, v.length));
+								
+								if(v < sess[i][1]) {
+									$(html).insertBefore($(this));
+									inserted = true;
+								}
+							})
+							
+							if(!inserted) {
+								$(html).insertAfter($('session-stats-list li:last-child'));
+							}
+						}
+						
+						// If we're in the admin panel, add the session broadcast option
+						if($("option[value=" + sess[i][0] + "]").length == 0){
+							$('#admin-broadcast-channel').append($("<option value='" + sess[i][0] + "'>" + sess[i][0] + "</option>"))
+						}
+					}
+					else {
+						if(sess[i][1] == 'DEL') {
+							$('#session-' + sess[i][0]).remove()
+							
+							// If we're in the admin panel, remember to remove the broadcast option
+							if(window.location.pathname == '/admin') {
+								$('option[value=' + sess[i][0] + ']').remove();
+							}
+							
+							// Re-insert the placeholder if there are no more sessions left
+							if($('#session-stats-list > .session').length ==0){
+								$('#session-stats-list').append($('<li class="placeholder">None yet.</li>'));
+							}
+						}
+						else {
+							$('#session-' + sess[i][0]).eq(0).html(sess_format); // Otherwise we just substitute the contents of the appropriate <li>
+						}
+					}
+				}
+			}
+		}
+
+		
 	</script>
 {% end %}
 
